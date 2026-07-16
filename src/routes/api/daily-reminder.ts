@@ -7,7 +7,8 @@ const PLAY_URL = `${SITE_URL}?utm_source=email&utm_medium=daily&utm_campaign=rem
 // CAN-SPAM wants a real postal address on bulk email. Exported so a test can
 // hold the footer to it: this email is assembled in code, so there is no
 // template file to eyeball, and it shipped without an address until now.
-export const MAILING_ADDRESS = "Spelling Blocks, 8721 233rd Pl NE, Redmond, WA 98053";
+export const MAILING_ADDRESS =
+  "Spelling Blocks, 7511 Greenwood Ave North, Unit 4147, Seattle, WA 98103, United States";
 
 function json(data: unknown, status = 200): Response {
   return new Response(JSON.stringify(data), {
