@@ -17,7 +17,11 @@ Signup used to add the address to the Resend segment on submit, so anyone could 
 
 **Verified live on spellingblocks.com:** confirm's no-token and garbage-token branches render + 400; subscribe invalid-email 400; honeypot silent 200; homepage 200. Real send path exercised with `delivered@resend.dev` (Resend's sink address, no real inbox): returned 200, and the Resend log shows exactly **one** "Confirm your Spelling Blocks signup" delivered. That 200 also proves `SUBSCRIBE_SECRET` is set in Vercel (else 500) and the transactional send works with the live key (else 502). Submitting the same address twice produced only that one email, so **the per-address cooldown suppresses a duplicate send in production**, not just in tests.
 
-**Still owed — the one unverified link:** the `/confirm` happy path (valid token → `contacts.create` → contact in segment). It needs a real inbox to click the link, and minting a token by hand needs the production `SUBSCRIBE_SECRET`. The `contacts.create` call itself is unchanged from the previously working code, just relocated from subscribe to confirm. **Do one real signup with a real address and confirm the contact appears in the segment.**
+**End-to-end verified on production with a real address** (`hello+delete@brentspore.com`, 2026-07-16): submit → 200, confirmation email delivered and rendered correctly with a real production-signed token (48h expiry, decoded and checked) → **contact absent from Resend at that point (404), proving submit writes nothing** → clicked the real link from the email body → "You're in" 200 → contact present, `unsubscribed:false`, **in the "Spelling Blocks" segment** (`9905acb9-a25e-4b33-94e2-89e1bb91516e`), so the daily broadcast will reach it. Corroborating: `delivered@resend.dev` was submitted and delivered but never confirmed, and is not a contact.
+
+**Resend gotcha for future verification:** a contact's `created_at` is when the address first entered the account's contact book, NOT when it joined a segment. `hello@brentspore.com` shows `created_at` 07-14 while sitting in a segment created 07-16. Do not read `created_at` as evidence of when a signup happened.
+
+**Segment state:** the `hello+delete@` test contact was removed after verifying (owner confirmed), leaving "Spelling Blocks" with 1 contact: `hello@brentspore.com`, added 07-14 by the old pre-double-opt-in subscribe. So the segment currently has no double-opted-in members — the first real one will arrive through the new flow.
 
 ---
 
