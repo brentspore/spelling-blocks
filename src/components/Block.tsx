@@ -43,6 +43,8 @@ export function Block({
     "--c": bg,
     "--rot": `${rotate}deg`,
     ...(flow !== undefined ? { "--wi": flow } : {}),
+    // Light letters on the dark blocks, ink on the light butter block.
+    color: color === "butter" ? "#26221b" : "#f1e7d0",
     fontSize,
     lineHeight: 1,
   } as CSSProperties;

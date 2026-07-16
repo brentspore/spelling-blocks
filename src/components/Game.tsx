@@ -2,7 +2,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { HelpCircle, BarChart2, Settings as SettingsIcon, Shuffle } from "lucide-react";
 import type { Puzzle } from "@/data/puzzles";
 import { daily, practice } from "@/data/puzzles";
-import { getTodayPuzzle } from "@/game/daily";
+import { getTodayPuzzle, msUntilTomorrow, formatCountdown } from "@/game/daily";
 import { isWord, getDictionary } from "@/game/dictionary";
 import { assignColors, type BlockColor } from "@/game/colors";
 import { clack, winChord, setMuted, isMuted } from "@/game/audio";
@@ -141,6 +141,16 @@ export function Game() {
   }, [startedAt, won]);
 
   const elapsedMs = startedAt && !won ? elapsedBase + (now - startedAt) : elapsedBase;
+
+  // Once the daily is solved, the top slot counts down to tomorrow's puzzle.
+  const [countdown, setCountdown] = useState(() => formatCountdown(msUntilTomorrow()));
+  useEffect(() => {
+    if (!won || mode.kind !== "daily") return;
+    const tick = () => setCountdown(formatCountdown(msUntilTomorrow()));
+    tick();
+    const id = window.setInterval(tick, 1000);
+    return () => window.clearInterval(id);
+  }, [won, mode.kind]);
 
   const usedIndices = useMemo(() => {
     const s = new Set<number>();
@@ -339,6 +349,9 @@ export function Game() {
       >
         <h1
           style={{
+            display: "flex",
+            alignItems: "center",
+            gap: 9,
             fontFamily: "'Bricolage Grotesque', sans-serif",
             fontSize: 22,
             fontWeight: 800,
@@ -346,6 +359,7 @@ export function Game() {
             margin: 0,
           }}
         >
+          <img src="/favicon.svg" alt="" width={28} height={28} style={{ display: "block" }} />
           Spelling Blocks
         </h1>
         <div style={{ display: "flex", gap: 8, alignItems: "center" }}>
@@ -388,7 +402,30 @@ export function Game() {
           {isPractice ? "Practice" : `#${mode.kind === "daily" ? mode.number : ""}`} · par{" "}
           {puzzle.par}
         </span>
-        <span>{formatTime(elapsedMs)}</span>
+        {won && !isPractice ? (
+          <span
+            style={{
+              display: "inline-flex",
+              flexDirection: "column",
+              alignItems: "center",
+              lineHeight: 1.1,
+            }}
+          >
+            <span
+              style={{
+                fontSize: 10,
+                opacity: 0.6,
+                textTransform: "uppercase",
+                letterSpacing: "0.06em",
+              }}
+            >
+              next puzzle
+            </span>
+            <span style={{ fontVariantNumeric: "tabular-nums" }}>{countdown}</span>
+          </span>
+        ) : (
+          <span>{formatTime(elapsedMs)}</span>
+        )}
         <button
           onClick={isPractice ? backToDaily : startPractice}
           style={{

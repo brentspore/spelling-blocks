@@ -39,30 +39,46 @@ export async function renderShareCard(d: ShareData): Promise<Blob> {
   const wallX = (size - wallWidth) / 2;
   const maxLen = Math.max(...d.wordLetters.map((w) => w.length), 1);
   const bs = Math.min(120, Math.floor(wallWidth / maxLen) - 8);
-  const totalH = d.wordLetters.length * (bs + 10);
+  const rowGap = 18;
+  const totalH = d.wordLetters.length * (bs + rowGap);
   let y = wallTop + Math.max(0, (wallHeight - totalH) / 2);
   for (const word of d.wordLetters) {
     const rowW = word.length * bs;
     let x = (size - rowW) / 2;
     for (const b of word) {
-      // shadow
+      const w = bs - 4;
+      // thickness edge + soft contact shadow
+      ctx.save();
+      ctx.shadowColor = "rgba(38,34,27,0.28)";
+      ctx.shadowBlur = 14;
+      ctx.shadowOffsetY = 10;
       ctx.fillStyle = "#26221B";
-      ctx.fillRect(x + 5, y + 6, bs - 4, bs - 4);
+      roundRect(ctx, x, y + 7, w, w, 14);
+      ctx.fill();
+      ctx.restore();
       // face
+      roundRect(ctx, x, y, w, w, 14);
       ctx.fillStyle = COLOR_HEX[b.color];
+      ctx.fill();
+      // bevel, lit from the top
+      const grad = ctx.createLinearGradient(x, y, x, y + w);
+      grad.addColorStop(0, "rgba(255,255,255,0.34)");
+      grad.addColorStop(0.5, "rgba(255,255,255,0)");
+      grad.addColorStop(1, "rgba(0,0,0,0.22)");
+      ctx.fillStyle = grad;
+      ctx.fill();
+      // border
       ctx.strokeStyle = "#26221B";
       ctx.lineWidth = 4;
-      roundRect(ctx, x, y, bs - 4, bs - 4, 12);
-      ctx.fill();
       ctx.stroke();
-      // letter
-      ctx.fillStyle = "#26221B";
+      // letter: light on dark blocks, ink on butter
+      ctx.fillStyle = b.color === "butter" ? "#26221B" : "#F1E7D0";
       ctx.font = `${Math.floor(bs * 0.5)}px 'Archivo Black', sans-serif`;
       ctx.textBaseline = "middle";
-      ctx.fillText(b.letter, x + (bs - 4) / 2, y + (bs - 4) / 2 + 4);
+      ctx.fillText(b.letter, x + w / 2, y + w / 2 + 4);
       x += bs;
     }
-    y += bs + 10;
+    y += bs + rowGap;
   }
   ctx.textBaseline = "alphabetic";
 
