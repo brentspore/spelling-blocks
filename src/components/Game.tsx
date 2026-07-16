@@ -519,8 +519,53 @@ export function Game() {
       </div>
 
       {/* Footer */}
-      <footer style={{ marginTop: 32, textAlign: "center", opacity: 0.6, fontSize: 12 }}>
-        <div>A Synergy game.</div>
+      <footer
+        style={{
+          marginTop: 36,
+          paddingTop: 20,
+          borderTop: "1px solid rgba(38,34,27,0.15)",
+          textAlign: "center",
+          fontSize: 12,
+          color: "#26221b",
+        }}
+      >
+        <div
+          style={{
+            display: "flex",
+            gap: 16,
+            justifyContent: "center",
+            alignItems: "center",
+            flexWrap: "wrap",
+          }}
+        >
+          <a
+            href="https://synergyprod.com/"
+            target="_blank"
+            rel="noopener noreferrer"
+            style={{
+              display: "inline-flex",
+              alignItems: "center",
+              gap: 6,
+              color: "#26221b",
+              textDecoration: "none",
+              opacity: 0.8,
+            }}
+          >
+            <span style={{ opacity: 0.7 }}>Made by</span>
+            <img src="/synergy-logo.svg" alt="Synergy" height={18} style={{ display: "block" }} />
+          </a>
+          <a
+            href="https://synergyprod.com/privacy"
+            target="_blank"
+            rel="noopener noreferrer"
+            style={{ color: "#26221b", opacity: 0.7 }}
+          >
+            Privacy
+          </a>
+        </div>
+        <div style={{ opacity: 0.5, marginTop: 10, fontSize: 11 }}>
+          © 2026 Synergy. We use cookies for analytics.
+        </div>
       </footer>
 
       <Modal open={showHelp} onClose={() => setShowHelp(false)} title="How to play">
