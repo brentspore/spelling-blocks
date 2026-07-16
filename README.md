@@ -29,3 +29,13 @@ in the Vercel project for deploys):
 
 The reminder cron (`vercel.json`) runs daily at 13:00 UTC (6am Pacific during
 daylight saving; Vercel Cron is UTC only and does not shift with DST).
+
+To check the reminder's wiring without mailing anyone, add `?dry_run=1`. It
+proves the API key works and that the segment and topic ids resolve — an env var
+set to a typo still looks present, and the only other way to exercise this route
+is a real send:
+
+```
+curl -H "Authorization: Bearer $CRON_SECRET" \
+  "https://spellingblocks.com/api/daily-reminder?dry_run=1"
+```

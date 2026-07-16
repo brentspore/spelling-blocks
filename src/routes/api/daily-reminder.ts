@@ -88,9 +88,37 @@ async function sendReminder(request: Request): Promise<Response> {
   }
 
   const puzzleNumber = getTodayPuzzleNumber();
+  const resend = new Resend(apiKey);
+
+  /* `?dry_run=1` checks the wiring without mailing anyone: it proves the key
+     works and that the segment and topic ids actually resolve. Env vars can be
+     set to a typo and still look present, and the only other way to exercise
+     this route is to send a real broadcast to real people. */
+  if (new URL(request.url).searchParams.get("dry_run") === "1") {
+    const [segment, topic] = await Promise.all([
+      resend.segments.get(segmentId),
+      resend.topics.get(topicId),
+    ]);
+    if (segment.error || topic.error) {
+      console.error("daily-reminder: dry run failed", segment.error ?? topic.error);
+      return json(
+        {
+          ok: false,
+          error: segment.error ? "Segment id did not resolve." : "Topic id did not resolve.",
+        },
+        500,
+      );
+    }
+    return json({
+      ok: true,
+      dryRun: true,
+      puzzleNumber,
+      segment: segment.data?.name ?? null,
+      topic: topic.data?.name ?? null,
+    });
+  }
 
   try {
-    const resend = new Resend(apiKey);
     const { data, error } = await resend.broadcasts.create({
       segmentId,
       topicId,
