@@ -8,7 +8,7 @@ const GAMES: { name: string; tagline: string; url: string; initial: string }[] =
   {
     name: "The Trail Game",
     tagline: "Daily one-line path puzzle",
-    url: "https://onepagetoys.com/toys/trail-game/",
+    url: "https://thetrailgame.com",
     initial: "T",
   },
   {
