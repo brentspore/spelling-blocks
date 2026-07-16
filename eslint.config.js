@@ -36,5 +36,12 @@ export default tseslint.config(
       "@typescript-eslint/no-unused-vars": "off",
     },
   },
+  {
+    // Server routes run on Node (they use process.env), not in the browser, and
+    // export a Route object rather than a component.
+    files: ["src/routes/api/**/*.ts"],
+    languageOptions: { globals: globals.node },
+    rules: { "react-refresh/only-export-components": "off" },
+  },
   eslintPluginPrettier,
 );

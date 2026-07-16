@@ -6,10 +6,7 @@ export function StatsBody() {
   const s = getStats();
   const [countdown, setCountdown] = useState(() => formatCountdown(msUntilTomorrow()));
   useEffect(() => {
-    const id = window.setInterval(
-      () => setCountdown(formatCountdown(msUntilTomorrow())),
-      1000,
-    );
+    const id = window.setInterval(() => setCountdown(formatCountdown(msUntilTomorrow())), 1000);
     return () => window.clearInterval(id);
   }, []);
   const winPct = s.played > 0 ? Math.round((s.wins / s.played) * 100) : 0;

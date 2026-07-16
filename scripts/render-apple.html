@@ -1,0 +1,53 @@
+<!doctype html>
+<!-- Renders the block on an opaque paper bg (for apple-touch-icon.png; iOS
+     wants no transparency). Fixed 180x180 to match the screenshot window size. -->
+<html>
+  <head>
+    <style>
+      * {
+        margin: 0;
+      }
+      html,
+      body {
+        width: 180px;
+        height: 180px;
+      }
+      body {
+        background: #f1e7d0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+      svg {
+        width: 148px;
+        height: 148px;
+      }
+    </style>
+  </head>
+  <body>
+    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
+      <rect
+        x="4"
+        y="4"
+        width="56"
+        height="56"
+        rx="13"
+        fill="#f2b63c"
+        stroke="#26221b"
+        stroke-width="3.5"
+      />
+      <text
+        x="32"
+        y="33"
+        text-anchor="middle"
+        dominant-baseline="central"
+        font-family="'Arial Black', Impact, system-ui, sans-serif"
+        font-weight="900"
+        font-size="40"
+        fill="#26221b"
+      >
+        S
+      </text>
+    </svg>
+  </body>
+</html>

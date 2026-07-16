@@ -1,21 +1,28 @@
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import {
-  Outlet,
-  createRootRouteWithContext,
-  HeadContent,
-  Scripts,
-} from "@tanstack/react-router";
+import { Outlet, createRootRouteWithContext, HeadContent, Scripts } from "@tanstack/react-router";
 import { type ReactNode } from "react";
 
 import appCss from "../styles.css?url";
 
 function NotFoundComponent() {
   return (
-    <div style={{ minHeight: "100vh", display: "flex", alignItems: "center", justifyContent: "center", padding: 16 }}>
+    <div
+      style={{
+        minHeight: "100vh",
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+        padding: 16,
+      }}
+    >
       <div style={{ textAlign: "center" }}>
-        <h1 style={{ fontFamily: "'Bricolage Grotesque', sans-serif", fontSize: 64, margin: 0 }}>404</h1>
+        <h1 style={{ fontFamily: "'Bricolage Grotesque', sans-serif", fontSize: 64, margin: 0 }}>
+          404
+        </h1>
         <p style={{ marginTop: 8 }}>Page not found.</p>
-        <a href="/" style={{ color: "#26221B", textDecoration: "underline" }}>Go home</a>
+        <a href="/" style={{ color: "#26221B", textDecoration: "underline" }}>
+          Go home
+        </a>
       </div>
     </div>
   );
@@ -23,10 +30,28 @@ function NotFoundComponent() {
 
 function ErrorComponentUI({ reset }: { error: Error; reset: () => void }) {
   return (
-    <div style={{ minHeight: "100vh", display: "flex", alignItems: "center", justifyContent: "center", padding: 16 }}>
+    <div
+      style={{
+        minHeight: "100vh",
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+        padding: 16,
+      }}
+    >
       <div style={{ textAlign: "center" }}>
         <h1 style={{ fontSize: 20 }}>Something went wrong.</h1>
-        <button onClick={reset} style={{ marginTop: 12, padding: "10px 16px", background: "#26221B", color: "#F1E7D0", border: "none", borderRadius: 8 }}>
+        <button
+          onClick={reset}
+          style={{
+            marginTop: 12,
+            padding: "10px 16px",
+            background: "#26221B",
+            color: "#F1E7D0",
+            border: "none",
+            borderRadius: 8,
+          }}
+        >
           Try again
         </button>
       </div>
@@ -47,22 +72,50 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       },
       { property: "og:site_name", content: "Spelling Blocks" },
       { property: "og:title", content: "Spelling Blocks — the daily word packing puzzle" },
-      { property: "og:description", content: "Twelve letter blocks. Use every one. A free daily puzzle." },
+      {
+        property: "og:description",
+        content: "Twelve letter blocks. Use every one. A free daily puzzle.",
+      },
       { property: "og:type", content: "website" },
-      { property: "og:image", content: "https://storage.googleapis.com/gpt-engineer-file-uploads/attachments/og-images/e2ce1b4a-ad74-4f0b-8e11-5399fc956092" },
+      { property: "og:url", content: "https://spellingblocks.com/" },
+      { property: "og:image", content: "https://spellingblocks.com/og.png" },
+      { property: "og:image:width", content: "1200" },
+      { property: "og:image:height", content: "630" },
+      { property: "og:image:alt", content: "Spelling Blocks" },
       { name: "twitter:card", content: "summary_large_image" },
       { name: "twitter:title", content: "Spelling Blocks — the daily word packing puzzle" },
-      { name: "twitter:description", content: "Twelve letter blocks. Use every one. A free daily puzzle." },
-      { name: "twitter:image", content: "https://storage.googleapis.com/gpt-engineer-file-uploads/attachments/og-images/e2ce1b4a-ad74-4f0b-8e11-5399fc956092" },
+      {
+        name: "twitter:description",
+        content: "Twelve letter blocks. Use every one. A free daily puzzle.",
+      },
+      { name: "twitter:image", content: "https://spellingblocks.com/og.png" },
     ],
     links: [
       { rel: "stylesheet", href: appCss },
-      { rel: "icon", href: "/favicon.ico", type: "image/x-icon" },
+      { rel: "canonical", href: "https://spellingblocks.com/" },
+      { rel: "icon", href: "/favicon.svg", type: "image/svg+xml" },
+      { rel: "icon", href: "/favicon.ico", sizes: "any" },
+      { rel: "apple-touch-icon", href: "/apple-touch-icon.png" },
       { rel: "preconnect", href: "https://fonts.googleapis.com" },
       { rel: "preconnect", href: "https://fonts.gstatic.com", crossOrigin: "anonymous" },
       {
         rel: "stylesheet",
         href: "https://fonts.googleapis.com/css2?family=Archivo+Black&family=Bricolage+Grotesque:opsz,wght@12..96,600;12..96,700;12..96,800&family=Schibsted+Grotesk:wght@400;500;600;700&display=swap",
+      },
+    ],
+    scripts: [
+      {
+        type: "application/ld+json",
+        children: JSON.stringify({
+          "@context": "https://schema.org",
+          "@type": "WebApplication",
+          name: "Spelling Blocks",
+          url: "https://spellingblocks.com/",
+          applicationCategory: "GameApplication",
+          browserRequirements: "Requires JavaScript.",
+          description: "Twelve letter blocks. Use every one. A free daily word puzzle.",
+          offers: { "@type": "Offer", price: "0", priceCurrency: "USD" },
+        }),
       },
     ],
   }),

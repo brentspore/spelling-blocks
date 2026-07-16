@@ -1,0 +1,108 @@
+<!doctype html>
+<!-- Source for public/og.png (1200x630). Render with scripts/build-assets.sh. -->
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Archivo+Black&family=Bricolage+Grotesque:opsz,wght@12..96,700;12..96,800&family=Schibsted+Grotesk:wght@400;500;600&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      * {
+        margin: 0;
+        box-sizing: border-box;
+      }
+      html,
+      body {
+        width: 1200px;
+        height: 630px;
+      }
+      body {
+        background: #f1e7d0;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 44px;
+        font-family: "Schibsted Grotesk", sans-serif;
+        color: #26221b;
+        overflow: hidden;
+      }
+      .rows {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 14px;
+      }
+      .row {
+        display: flex;
+        gap: 12px;
+      }
+      .block {
+        width: 96px;
+        height: 96px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-family: "Archivo Black", sans-serif;
+        font-size: 52px;
+        color: #26221b;
+        border: 3px solid #26221b;
+        border-radius: 16px;
+        box-shadow: 6px 7px 0 #26221b;
+      }
+      .cobalt {
+        background: #2b59c3;
+        color: #f1e7d0;
+      }
+      .grass {
+        background: #3e8a4e;
+        color: #f1e7d0;
+      }
+      .butter {
+        background: #f2b63c;
+      }
+      .cherry {
+        background: #c7402d;
+        color: #f1e7d0;
+      }
+      .tagline {
+        font-size: 34px;
+        font-weight: 500;
+        text-align: center;
+      }
+      .foot {
+        font-size: 24px;
+        font-weight: 600;
+        opacity: 0.6;
+        letter-spacing: 0.01em;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="rows">
+      <div class="row">
+        <div class="block cherry" style="transform: rotate(-3deg)">S</div>
+        <div class="block butter" style="transform: rotate(2deg)">P</div>
+        <div class="block cobalt" style="transform: rotate(-1deg)">E</div>
+        <div class="block grass" style="transform: rotate(3deg)">L</div>
+        <div class="block cherry" style="transform: rotate(-2deg)">L</div>
+        <div class="block cobalt" style="transform: rotate(1deg)">I</div>
+        <div class="block butter" style="transform: rotate(-3deg)">N</div>
+        <div class="block grass" style="transform: rotate(2deg)">G</div>
+      </div>
+      <div class="row">
+        <div class="block cobalt" style="transform: rotate(2deg)">B</div>
+        <div class="block cherry" style="transform: rotate(-2deg)">L</div>
+        <div class="block grass" style="transform: rotate(3deg)">O</div>
+        <div class="block butter" style="transform: rotate(-1deg)">C</div>
+        <div class="block cobalt" style="transform: rotate(2deg)">K</div>
+        <div class="block cherry" style="transform: rotate(-3deg)">S</div>
+      </div>
+    </div>
+    <div class="tagline">Twelve letter blocks. Use every one.</div>
+    <div class="foot">spellingblocks.com</div>
+  </body>
+</html>

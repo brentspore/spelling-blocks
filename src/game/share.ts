@@ -11,9 +11,7 @@ export type ShareData = {
 };
 
 export function buildShareText(d: ShareData): string {
-  const rows = d.wordLetters
-    .map((w) => "🟧".repeat(w.length))
-    .join("\n");
+  const rows = d.wordLetters.map((w) => "🟧".repeat(w.length)).join("\n");
   return `Spelling Blocks #${d.puzzleNumber}\n${rows}\n${d.words.length} words in ${d.timeStr}\nspellingblocks.com`;
 }
 
@@ -76,9 +74,7 @@ export async function renderShareCard(d: ShareData): Promise<Blob> {
   ctx.font = "500 28px 'Schibsted Grotesk', sans-serif";
   ctx.fillText("spellingblocks.com", size / 2, 1010);
 
-  return await new Promise<Blob>((resolve) =>
-    canvas.toBlob((b) => resolve(b!), "image/png"),
-  );
+  return await new Promise<Blob>((resolve) => canvas.toBlob((b) => resolve(b!), "image/png"));
 }
 
 function roundRect(

@@ -12,6 +12,7 @@ export type Stats = {
 export type DailyState = {
   puzzleNumber: number;
   placed: string[]; // words placed in wall
+  placedIndices?: number[][]; // exact block index per letter, per placed word
   builder: number[]; // tray indices in builder
   startedAt: number | null;
   elapsedMs: number;
@@ -73,21 +74,41 @@ export function setHelpSeen(v: boolean) {
   write("help_seen", v);
 }
 
-export function recordWin(puzzleNumber: number, cleanSolve: boolean): Stats {
-  const s = getStats();
+// Email signup: once the player signs up, or dismisses twice, never ask again.
+export function getEmailSignedUp(): boolean {
+  return read<boolean>("email_signed_up", false);
+}
+export function setEmailSignedUp(v: boolean) {
+  write("email_signed_up", v);
+}
+export function getEmailDismissed(): number {
+  return read<number>("email_dismissed", 0);
+}
+export function setEmailDismissed(n: number) {
+  write("email_dismissed", n);
+}
+
+// Pure: given the prior stats, return the stats after winning `puzzleNumber`.
+// Winning the same puzzle again is a no-op so a redundant call can't inflate
+// played/wins or the streak.
+export function nextStats(prev: Stats, puzzleNumber: number, cleanSolve: boolean): Stats {
+  if (prev.lastWinPuzzle === puzzleNumber) return prev;
+  const s: Stats = { ...prev };
   s.played += 1;
   s.wins += 1;
   if (cleanSolve) s.cleanSolves += 1;
-  // Streak logic: consecutive daily puzzle numbers.
-  if (s.lastWinPuzzle !== null && s.lastWinPuzzle === puzzleNumber - 1) {
-    s.currentStreak += 1;
-  } else if (s.lastWinPuzzle === puzzleNumber) {
-    // already recorded, no change
-  } else {
-    s.currentStreak = 1;
-  }
+  // Streak counts consecutive daily puzzle numbers.
+  s.currentStreak =
+    prev.lastWinPuzzle !== null && prev.lastWinPuzzle === puzzleNumber - 1
+      ? prev.currentStreak + 1
+      : 1;
   if (s.currentStreak > s.maxStreak) s.maxStreak = s.currentStreak;
   s.lastWinPuzzle = puzzleNumber;
+  return s;
+}
+
+export function recordWin(puzzleNumber: number, cleanSolve: boolean): Stats {
+  const s = nextStats(getStats(), puzzleNumber, cleanSolve);
   setStats(s);
   return s;
 }

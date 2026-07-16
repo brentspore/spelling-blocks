@@ -16,6 +16,7 @@ import {
   recordWin,
   type DailyState,
 } from "@/game/storage";
+import { resolveRestoredState, findAvailableBlock } from "@/game/dailyState";
 import { Block } from "./Block";
 import { Modal } from "./Modal";
 import { HelpBody } from "./HelpModal";
@@ -98,26 +99,13 @@ export function Game() {
     }
     const s = getDailyState(mode.number);
     if (s) {
-      setPlaced(s.placed);
-      setBuilder(s.builder);
-      setStartedAt(s.startedAt);
-      setElapsedBase(s.elapsedMs);
-      setWon(s.won);
-      // Reconstruct placedIndices from placed words + fresh assignment
-      const used = new Set<number>();
-      const wordIdx: number[][] = [];
-      for (const w of s.placed) {
-        const idxs: number[] = [];
-        for (const ch of w) {
-          const found = puzzle.blocks.findIndex((b, i) => !used.has(i) && b === ch);
-          if (found >= 0) {
-            idxs.push(found);
-            used.add(found);
-          }
-        }
-        wordIdx.push(idxs);
-      }
-      setPlacedIndices(wordIdx);
+      const r = resolveRestoredState(s, puzzle.blocks, Date.now());
+      setPlaced(r.placed);
+      setPlacedIndices(r.placedIndices);
+      setBuilder(r.builder);
+      setStartedAt(r.startedAt);
+      setElapsedBase(r.elapsedBase);
+      setWon(r.won);
     } else {
       setPlaced([]);
       setPlacedIndices([]);
@@ -136,14 +124,14 @@ export function Game() {
     const state: DailyState = {
       puzzleNumber: mode.number,
       placed,
+      placedIndices,
       builder,
       startedAt,
-      elapsedMs:
-        startedAt && !won ? elapsedBase + (Date.now() - startedAt) : elapsedBase,
+      elapsedMs: startedAt && !won ? elapsedBase + (Date.now() - startedAt) : elapsedBase,
       won,
     };
     setDailyState(state);
-  }, [mode, placed, builder, startedAt, elapsedBase, won]);
+  }, [mode, placed, placedIndices, builder, startedAt, elapsedBase, won]);
 
   // Timer tick
   useEffect(() => {
@@ -178,20 +166,16 @@ export function Game() {
   const addByLetter = useCallback(
     (letter: string) => {
       if (won) return;
-      const L = letter.toUpperCase();
-      const idx = puzzle.blocks.findIndex((b, i) => b === L && !usedIndices.has(i));
+      const idx = findAvailableBlock(puzzle.blocks, usedIndices, letter);
       if (idx >= 0) addToBuilder(idx);
     },
     [puzzle, usedIndices, won, addToBuilder],
   );
 
-  const removeFromBuilder = useCallback(
-    (posInBuilder: number) => {
-      setBuilder((b) => b.filter((_, i) => i !== posInBuilder));
-      clack(1.2);
-    },
-    [],
-  );
+  const removeFromBuilder = useCallback((posInBuilder: number) => {
+    setBuilder((b) => b.filter((_, i) => i !== posInBuilder));
+    clack(1.2);
+  }, []);
 
   const currentWord = builder.map((i) => puzzle.blocks[i]).join("");
   const canPlace = currentWord.length >= 3 && isWord(currentWord);
@@ -262,9 +246,7 @@ export function Game() {
     clack(1);
   }, []);
 
-  const [displayOrder, setDisplayOrder] = useState<number[]>(() =>
-    puzzle.blocks.map((_, i) => i),
-  );
+  const [displayOrder, setDisplayOrder] = useState<number[]>(() => puzzle.blocks.map((_, i) => i));
   useEffect(() => {
     setDisplayOrder(puzzle.blocks.map((_, i) => i));
   }, [puzzle]);
@@ -390,7 +372,8 @@ export function Game() {
         }}
       >
         <span style={{ fontWeight: 600 }}>
-          {isPractice ? "Practice" : `#${mode.kind === "daily" ? mode.number : ""}`} · par {puzzle.par}
+          {isPractice ? "Practice" : `#${mode.kind === "daily" ? mode.number : ""}`} · par{" "}
+          {puzzle.par}
         </span>
         <span>{formatTime(elapsedMs)}</span>
         <button
@@ -538,7 +521,6 @@ export function Game() {
       {/* Footer */}
       <footer style={{ marginTop: 32, textAlign: "center", opacity: 0.6, fontSize: 12 }}>
         <div>A Synergy game.</div>
-        <div id="tl-slot"></div>
       </footer>
 
       <Modal open={showHelp} onClose={() => setShowHelp(false)} title="How to play">

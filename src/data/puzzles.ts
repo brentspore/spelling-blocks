@@ -172,9 +172,9 @@ function shuffled<T>(arr: T[], seed: number): T[] {
 function buildPuzzle(solution: string[], seed: number): Puzzle {
   const letters = solution.join("").toUpperCase().split("");
   if (letters.length !== 12) {
-    // Fail loud in dev.
-    // eslint-disable-next-line no-console
-    console.error("Bad puzzle length", letters.length, solution);
+    throw new Error(
+      `Puzzle must use exactly 12 letters, got ${letters.length}: ${solution.join(" ")}`,
+    );
   }
   return {
     blocks: shuffled(letters, seed),
@@ -183,9 +183,5 @@ function buildPuzzle(solution: string[], seed: number): Puzzle {
   };
 }
 
-export const daily: Puzzle[] = DAILY_SOLUTIONS.map((sol, i) =>
-  buildPuzzle(sol, 1000 + i),
-);
-export const practice: Puzzle[] = PRACTICE_SOLUTIONS.map((sol, i) =>
-  buildPuzzle(sol, 5000 + i),
-);
+export const daily: Puzzle[] = DAILY_SOLUTIONS.map((sol, i) => buildPuzzle(sol, 1000 + i));
+export const practice: Puzzle[] = PRACTICE_SOLUTIONS.map((sol, i) => buildPuzzle(sol, 5000 + i));

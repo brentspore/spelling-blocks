@@ -7,7 +7,13 @@ export function HelpBody() {
         n={1}
         title="Build words"
         demo={
-          <MiniRow letters={[["C", "cobalt"], ["A", "butter"], ["T", "grass"]]} />
+          <MiniRow
+            letters={[
+              ["C", "cobalt"],
+              ["A", "butter"],
+              ["T", "grass"],
+            ]}
+          />
         }
         body="Tap blocks to form a word of three or more letters. Tap Place word to add it to your wall."
       />
@@ -15,21 +21,46 @@ export function HelpBody() {
         n={2}
         title="Use every block"
         demo={
-          <MiniRow letters={[["A", "cobalt"], ["B", "butter"], ["C", "cherry"], ["D", "grass"]]} />
+          <MiniRow
+            letters={[
+              ["A", "cobalt"],
+              ["B", "butter"],
+              ["C", "cherry"],
+              ["D", "grass"],
+            ]}
+          />
         }
         body="You start with twelve blocks. Every block must end up in a word. No leftovers."
       />
       <Step
         n={3}
         title="Beat par"
-        demo={<MiniRow letters={[["P", "cherry"], ["A", "butter"], ["R", "grass"]]} />}
+        demo={
+          <MiniRow
+            letters={[
+              ["P", "cherry"],
+              ["A", "butter"],
+              ["R", "grass"],
+            ]}
+          />
+        }
         body="Each puzzle has a target word count. Finish at or under par for a clean solve."
       />
     </div>
   );
 }
 
-function Step({ n, title, body, demo }: { n: number; title: string; body: string; demo: React.ReactNode }) {
+function Step({
+  n,
+  title,
+  body,
+  demo,
+}: {
+  n: number;
+  title: string;
+  body: string;
+  demo: React.ReactNode;
+}) {
   return (
     <div style={{ display: "flex", gap: 12, alignItems: "flex-start" }}>
       <div
