@@ -521,49 +521,46 @@ export function Game() {
       {/* Footer */}
       <footer
         style={{
-          marginTop: 36,
-          paddingTop: 20,
+          marginTop: 40,
+          paddingTop: 22,
           borderTop: "1px solid rgba(38,34,27,0.15)",
           textAlign: "center",
-          fontSize: 12,
           color: "#26221b",
         }}
       >
-        <div
+        <a
+          href="https://synergyprod.com/"
+          target="_blank"
+          rel="noopener noreferrer"
           style={{
-            display: "flex",
-            gap: 16,
-            justifyContent: "center",
+            display: "inline-flex",
+            flexDirection: "column",
             alignItems: "center",
-            flexWrap: "wrap",
+            gap: 7,
+            color: "#26221b",
+            textDecoration: "none",
           }}
         >
-          <a
-            href="https://synergyprod.com/"
-            target="_blank"
-            rel="noopener noreferrer"
+          <span
             style={{
-              display: "inline-flex",
-              alignItems: "center",
-              gap: 6,
-              color: "#26221b",
-              textDecoration: "none",
-              opacity: 0.8,
+              opacity: 0.5,
+              fontSize: 10,
+              fontWeight: 600,
+              letterSpacing: "0.12em",
+              textTransform: "uppercase",
             }}
           >
-            <span style={{ opacity: 0.7 }}>Made by</span>
-            <img src="/synergy-logo.svg" alt="Synergy" height={18} style={{ display: "block" }} />
-          </a>
-          <a
-            href="https://synergyprod.com/privacy"
-            target="_blank"
-            rel="noopener noreferrer"
-            style={{ color: "#26221b", opacity: 0.7 }}
-          >
-            Privacy
-          </a>
-        </div>
-        <div style={{ opacity: 0.5, marginTop: 10, fontSize: 11 }}>
+            Made by
+          </span>
+          <img
+            src="/synergy-logo.svg"
+            alt="Synergy"
+            width={105}
+            height={27}
+            style={{ display: "block" }}
+          />
+        </a>
+        <div style={{ opacity: 0.4, marginTop: 16, fontSize: 11 }}>
           © 2026 Synergy. We use cookies for analytics.
         </div>
       </footer>
