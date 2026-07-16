@@ -146,6 +146,7 @@ const PRACTICE_SOLUTIONS: SolutionSet[] = [
   ["FIX", "JAM", "PUB", "OWE"],
   ["JAB", "COW", "MUD", "PEG"],
   ["FIG", "JAR", "OWL", "CUB"],
+  ["ELF", "JAB", "COW", "GUM"],
 ];
 
 // Mulberry32 seeded RNG for deterministic shuffles.
