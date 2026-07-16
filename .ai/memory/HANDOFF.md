@@ -1,5 +1,24 @@
 # Handoff
 
+**State (2026-07-16): double opt-in + throttling on the subscribe form.**
+
+Signup used to add the address to the Resend segment on submit, so anyone could sign up someone else's address. Now:
+
+- `/api/subscribe` validates + honeypots as before, then mints an HMAC token and sends a confirmation email. It no longer touches the contact list.
+- `/confirm` (`src/routes/confirm.ts`, a server route rendering its own HTML) verifies the token and creates the contact in the segment. Handles invalid, expired, already-on-list, and Resend failure.
+- `src/server/optInToken.ts` — pure mint/verify, 48h expiry, constant-time compare. `optInToken.test.ts` covers round-trip, expiry, wrong secret, forged payload, malformed input.
+- `src/server/rateLimit.ts` — in-memory fixed-window limiter. Subscribe throttles 1 per address / 10 min (silent `ok:true`, no send, no signal to a bomber) and 5 per IP / hour (429 + `retry-after`). The address cooldown is `peek`ed and only `record`ed after a successful send, so a Resend failure never locks a player out of retrying — that split is the reason the limiter has `peek`/`record` and not just `check`.
+- `SUBSCRIBE_SECRET` is set in Vercel (owner did it 2026-07-16). Both endpoints fail closed with a 500 without it.
+- Results modal copy now says to check the inbox rather than claiming they are subscribed.
+
+**Throttling is best effort by design:** the counters are per SSR instance, so Vercel running several instances means an attacker gets one allowance per instance. It stops casual floods without putting a database behind a form that otherwise needs no storage. Durable upgrade if abuse ever shows up: Upstash/Vercel KV via the marketplace, or Turnstile on the form.
+
+**Verified:** 163 tests, typecheck, lint, `bun run build` all pass. Drove the dev server for real: confirm's no-token / garbage / expired branches render the right page + 400; subscribe's invalid-email (400) and honeypot (silent 200); per-IP throttle allows exactly 5 then 429s with `retry-after: 3583`; a different IP is unaffected; and a failed send leaves the address free to retry. **The Resend calls themselves are NOT locally verifiable — `.env.local` holds placeholder Resend values** (20-char key vs the real ~36), so both endpoints reach the API and get "API key is invalid". That proves the requests are well formed, not that the write lands. `spellingblocks.com` is verified for sending.
+
+**Still owed:** one real end-to-end signup on production (submit a real address, click the link, confirm the contact lands in the segment). Needs a real inbox, so it was left for the owner. `delivered@resend.dev` exercises the send path without a real inbox but gives you no link to click.
+
+---
+
 **State (2026-07-15):** First real pass on a fresh Lovable TanStack Start export, shipped and live on spellingblocks.com (Vercel, `main a7dfd59`). Done this session:
 
 - De-Lovabled: hand-written `vite.config.ts` replacing `@lovable.dev/vite-tanstack-config`, removed `AGENTS.md`/`.lovable/`/dead error shim/vendor favicon, regenerated the lockfile off public npm. Zero tool references in the repo.

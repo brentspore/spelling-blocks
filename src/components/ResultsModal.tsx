@@ -247,7 +247,9 @@ export function ResultsBody({
           }}
         >
           {emailPhase === "done" ? (
-            <div style={{ fontWeight: 600, fontSize: 15 }}>You're in. See you tomorrow.</div>
+            <div style={{ fontWeight: 600, fontSize: 15 }}>
+              Check your inbox. Tap the link to confirm and you are set.
+            </div>
           ) : (
             <form onSubmit={submitEmail}>
               <div
@@ -292,7 +294,7 @@ export function ResultsBody({
                   }}
                 />
                 <button className="sb-btn" type="submit" disabled={submitting}>
-                  {submitting ? "Signing up" : "Sign me up"}
+                  {submitting ? "Sending" : "Sign me up"}
                 </button>
               </div>
               {emailError && (

@@ -9,10 +9,16 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as ConfirmRouteImport } from './routes/confirm'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as ApiSubscribeRouteImport } from './routes/api/subscribe'
 import { Route as ApiDailyReminderRouteImport } from './routes/api/daily-reminder'
 
+const ConfirmRoute = ConfirmRouteImport.update({
+  id: '/confirm',
+  path: '/confirm',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
@@ -31,36 +37,47 @@ const ApiDailyReminderRoute = ApiDailyReminderRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/confirm': typeof ConfirmRoute
   '/api/daily-reminder': typeof ApiDailyReminderRoute
   '/api/subscribe': typeof ApiSubscribeRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/confirm': typeof ConfirmRoute
   '/api/daily-reminder': typeof ApiDailyReminderRoute
   '/api/subscribe': typeof ApiSubscribeRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/confirm': typeof ConfirmRoute
   '/api/daily-reminder': typeof ApiDailyReminderRoute
   '/api/subscribe': typeof ApiSubscribeRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/api/daily-reminder' | '/api/subscribe'
+  fullPaths: '/' | '/confirm' | '/api/daily-reminder' | '/api/subscribe'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/api/daily-reminder' | '/api/subscribe'
-  id: '__root__' | '/' | '/api/daily-reminder' | '/api/subscribe'
+  to: '/' | '/confirm' | '/api/daily-reminder' | '/api/subscribe'
+  id: '__root__' | '/' | '/confirm' | '/api/daily-reminder' | '/api/subscribe'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  ConfirmRoute: typeof ConfirmRoute
   ApiDailyReminderRoute: typeof ApiDailyReminderRoute
   ApiSubscribeRoute: typeof ApiSubscribeRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/confirm': {
+      id: '/confirm'
+      path: '/confirm'
+      fullPath: '/confirm'
+      preLoaderRoute: typeof ConfirmRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/': {
       id: '/'
       path: '/'
@@ -87,6 +104,7 @@ declare module '@tanstack/react-router' {
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  ConfirmRoute: ConfirmRoute,
   ApiDailyReminderRoute: ApiDailyReminderRoute,
   ApiSubscribeRoute: ApiSubscribeRoute,
 }

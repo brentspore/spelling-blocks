@@ -42,6 +42,42 @@ If a decision should apply across multiple projects, record it in `~/.ai/memory/
 
 ---
 
+### 2026-07-16 — Double opt-in via stateless signed tokens
+
+**Context:** The subscribe form added the address to the Resend segment immediately, so anyone could sign up someone else's address and it would start getting daily mail. Double opt-in normally needs somewhere to park the pending signup, and this app has no database.
+
+**Decision:** Carry the pending signup in the link itself. `/api/subscribe` mints an HMAC-SHA256 token (`base64url({e,x}).base64url(sig)`, 48 hour expiry, keyed by `SUBSCRIBE_SECRET`) and emails a confirm link. Nothing is written to Resend until `/confirm` verifies the token and creates the contact. Token logic is pure and tested in `src/server/optInToken.ts`.
+
+**Rationale:** Real double opt-in with zero storage. An unconfirmed address leaves no trace, and the segment only ever holds addresses whose owner clicked a link in their own inbox.
+
+**Revisit if:** The app gains a database (then pending signups could be rows, allowing resend-confirmation and pending-state UX), or abuse makes per-address send rate limiting necessary.
+
+---
+
+### 2026-07-16 — Subscribe throttling is in-memory and best effort
+
+**Context:** Double opt-in means `/api/subscribe` mails whatever address it is handed, which turns it into an email-bombing vector. Real rate limiting wants shared storage, and the app deliberately has no database.
+
+**Decision:** In-memory fixed-window limiter (`src/server/rateLimit.ts`) at module scope in the SSR function: 1 per address / 10 min, 5 per IP / hour. Accept that counters are per-instance and reset on cold start. Do not add Upstash/KV for this.
+
+**Rationale:** Catches the realistic floods (a warm instance absorbs most of one source's traffic) at zero infrastructure cost, on a free daily puzzle where the worst case is some wasted Resend quota. A new service is not worth it until abuse actually appears.
+
+**Revisit if:** Real abuse shows up in the Resend logs. Then either Upstash/Vercel KV for shared counters, or Turnstile on the form.
+
+---
+
+### 2026-07-16 — `/confirm` is a server route rendering its own HTML
+
+**Context:** The confirm link is opened straight from an email client. A React page route would boot the app shell and run the side effect in an isomorphic loader.
+
+**Decision:** `src/routes/confirm.ts` (no `.tsx`, no component) with a `server.handlers.GET` returning a self-contained styled HTML page. Server handlers work on non-`api/` paths, so the public URL stays `spellingblocks.com/confirm`.
+
+**Rationale:** The Resend write is guaranteed server-only, there is no hydration or client bundle for a page seen once, and the URL reads like a page instead of an endpoint.
+
+**Revisit if:** The confirm page needs interactivity.
+
+---
+
 ### 2026-07-15 — Puzzle validation gates the build
 
 **Context:** Puzzles are hand-authored data; a bad one (wrong letter count, unknown word) would ship silently.
