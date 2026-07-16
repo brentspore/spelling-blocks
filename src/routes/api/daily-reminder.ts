@@ -4,6 +4,10 @@ import { getTodayPuzzleNumber } from "@/game/daily";
 
 const SITE_URL = "https://spellingblocks.com";
 const PLAY_URL = `${SITE_URL}?utm_source=email&utm_medium=daily&utm_campaign=reminder`;
+// CAN-SPAM wants a real postal address on bulk email. Exported so a test can
+// hold the footer to it: this email is assembled in code, so there is no
+// template file to eyeball, and it shipped without an address until now.
+export const MAILING_ADDRESS = "Spelling Blocks, 8721 233rd Pl NE, Redmond, WA 98053";
 
 function json(data: unknown, status = 200): Response {
   return new Response(JSON.stringify(data), {
@@ -14,7 +18,7 @@ function json(data: unknown, status = 200): Response {
 
 // The whole email lives in this one function so it is easy to restyle later.
 // Table-based markup and inline styles keep it readable across email clients.
-function renderEmail(puzzleNumber: number): string {
+export function renderEmail(puzzleNumber: number): string {
   const paper = "#f1e7d0";
   const ink = "#26221b";
   const cherry = "#c7402d";
@@ -57,6 +61,8 @@ function renderEmail(puzzleNumber: number): string {
               <td style="border-top:1px solid rgba(38,34,27,0.2);padding-top:20px;font-size:13px;line-height:1.5;opacity:0.7;">
                 You are getting this because you signed up at spellingblocks.com.
                 <a href="{{{RESEND_UNSUBSCRIBE_URL}}}" style="color:${ink};">Unsubscribe</a>.
+                <br /><br />
+                ${MAILING_ADDRESS}
               </td>
             </tr>
           </table>
