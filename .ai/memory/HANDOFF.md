@@ -1,5 +1,29 @@
 # Handoff
 
+**State (2026-07-16, later): daily reminder is now scoped to a Resend topic (`main bf085ff`).**
+Found while working in the-trail-game: a contact's `unsubscribed` flag is **account-wide**, not
+per segment (Resend documents it as "unsubscribed from all Broadcasts", and one contact record is
+shared across every segment). So the reminder's unsubscribe link was silencing The Trail Game and
+every future network game too, with no signal to us. Segments and `source` tags separate *sending*
+only; **topics** are the per-game unsubscribe primitive, and there were none.
+
+`/api/daily-reminder` now passes `topicId` to `broadcasts.create` and **fails closed** (500, no
+send) if `RESEND_TOPIC_ID` is missing, matching the existing RESEND_API_KEY/RESEND_SEGMENT_ID
+handling, so it cannot quietly regress to an account-wide unsubscribe. README documents the var.
+163 tests / tsc / build green; lint warnings are pre-existing.
+
+- **OWNER ACTION REQUIRED:** set `RESEND_TOPIC_ID = bbd74af9-58e1-4758-8b26-8aba3220a142` (the
+  "Spelling Blocks" topic) in the **Vercel project**. Until then the 13:00 UTC cron returns 500 and
+  sends nothing. Chosen over a silent unscoped fallback deliberately: the list currently holds only
+  `hello@brentspore.com`, so a missed day costs nothing, whereas an unscoped send costs a real
+  subscriber's entire network subscription and cannot be undone without asking them to re-opt-in.
+- Topics are account-level: Spelling Blocks `bbd74af9-58e1-4758-8b26-8aba3220a142`, The Trail Game
+  `344026ed-06e6-433b-b1e4-21b604fc0570`. Both `defaultSubscription: opt_in`, which **does** cover
+  contacts created before the topic existed (verified). `defaultSubscription` **cannot be changed
+  after creation** — wrong value means delete and recreate. See global DECISIONS, "Every game
+  broadcast is scoped to its own Resend topic".
+- SDK note (resend 6.17.2): `broadcasts.create({ topicId })` maps to REST `topic_id`.
+
 **State (2026-07-16): double opt-in + throttling on the subscribe form.**
 
 Signup used to add the address to the Resend segment on submit, so anyone could sign up someone else's address. Now:
