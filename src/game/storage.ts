@@ -7,6 +7,7 @@ export type Stats = {
   maxStreak: number;
   cleanSolves: number;
   lastWinPuzzle: number | null;
+  bestTimeMs: number | null;
 };
 
 export type DailyState = {
@@ -26,6 +27,7 @@ const DEFAULT_STATS: Stats = {
   maxStreak: 0,
   cleanSolves: 0,
   lastWinPuzzle: null,
+  bestTimeMs: null,
 };
 
 function read<T>(key: string, fallback: T): T {
@@ -91,7 +93,12 @@ export function setEmailDismissed(n: number) {
 // Pure: given the prior stats, return the stats after winning `puzzleNumber`.
 // Winning the same puzzle again is a no-op so a redundant call can't inflate
 // played/wins or the streak.
-export function nextStats(prev: Stats, puzzleNumber: number, cleanSolve: boolean): Stats {
+export function nextStats(
+  prev: Stats,
+  puzzleNumber: number,
+  cleanSolve: boolean,
+  timeMs?: number,
+): Stats {
   if (prev.lastWinPuzzle === puzzleNumber) return prev;
   const s: Stats = { ...prev };
   s.played += 1;
@@ -103,12 +110,15 @@ export function nextStats(prev: Stats, puzzleNumber: number, cleanSolve: boolean
       ? prev.currentStreak + 1
       : 1;
   if (s.currentStreak > s.maxStreak) s.maxStreak = s.currentStreak;
+  if (timeMs != null && (prev.bestTimeMs == null || timeMs < prev.bestTimeMs)) {
+    s.bestTimeMs = timeMs;
+  }
   s.lastWinPuzzle = puzzleNumber;
   return s;
 }
 
-export function recordWin(puzzleNumber: number, cleanSolve: boolean): Stats {
-  const s = nextStats(getStats(), puzzleNumber, cleanSolve);
+export function recordWin(puzzleNumber: number, cleanSolve: boolean, timeMs?: number): Stats {
+  const s = nextStats(getStats(), puzzleNumber, cleanSolve, timeMs);
   setStats(s);
   return s;
 }

@@ -8,6 +8,7 @@ const base: Stats = {
   maxStreak: 0,
   cleanSolves: 0,
   lastWinPuzzle: null,
+  bestTimeMs: null,
 };
 
 describe("nextStats", () => {

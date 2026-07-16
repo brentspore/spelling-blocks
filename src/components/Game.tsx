@@ -14,9 +14,11 @@ import {
   getBool,
   setBool,
   recordWin,
+  getStats,
   type DailyState,
 } from "@/game/storage";
 import { resolveRestoredState, findAvailableBlock } from "@/game/dailyState";
+import { ACHIEVEMENTS, earnedIds, type Achievement } from "@/game/achievements";
 import { Block } from "./Block";
 import { Modal } from "./Modal";
 import { HelpBody } from "./HelpModal";
@@ -69,6 +71,7 @@ export function Game() {
   const [invalidWord, setInvalidWord] = useState<string | null>(null);
   const [won, setWon] = useState(false);
   const [wonAt, setWonAt] = useState<number | null>(null);
+  const [newAchievements, setNewAchievements] = useState<Achievement[]>([]);
 
   const [showHelp, setShowHelp] = useState(false);
   const [showStats, setShowStats] = useState(false);
@@ -87,6 +90,7 @@ export function Game() {
 
   // Load persistent daily state on daily mode
   useEffect(() => {
+    setNewAchievements([]);
     if (mode.kind !== "daily") {
       setPlaced([]);
       setPlacedIndices([]);
@@ -216,7 +220,9 @@ export function Game() {
       setWonAt(Date.now());
       if (mode.kind === "daily") {
         const clean = placed.length + 1 <= puzzle.par;
-        recordWin(mode.number, clean);
+        const beforeIds = earnedIds(getStats());
+        const after = recordWin(mode.number, clean, finalElapsed);
+        setNewAchievements(ACHIEVEMENTS.filter((a) => a.earned(after) && !beforeIds.has(a.id)));
       }
       winChord();
       window.setTimeout(() => setShowResults(true), 700);
@@ -679,6 +685,7 @@ export function Game() {
           onNextPractice={nextPractice}
           onToast={showToast}
           justWonAt={wonAt}
+          newAchievements={newAchievements}
         />
       </Modal>
 

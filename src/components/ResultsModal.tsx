@@ -1,6 +1,9 @@
 import { useState, type FormEvent } from "react";
+import { Trophy } from "lucide-react";
 import type { BlockColor } from "@/game/colors";
+import type { Achievement } from "@/game/achievements";
 import { Block } from "./Block";
+import { MoreGames } from "./MoreGames";
 import { buildShareText, renderShareCard } from "@/game/share";
 import {
   getStats,
@@ -21,6 +24,7 @@ type Props = {
   onNextPractice: () => void;
   onToast: (m: string) => void;
   justWonAt: number | null;
+  newAchievements: Achievement[];
 };
 
 export function ResultsBody({
@@ -32,6 +36,7 @@ export function ResultsBody({
   isPractice,
   onNextPractice,
   onToast,
+  newAchievements,
 }: Props) {
   const clean = words.length <= par;
 
@@ -166,6 +171,41 @@ export function ResultsBody({
         </div>
       )}
 
+      {newAchievements.length > 0 && (
+        <div
+          style={{
+            display: "flex",
+            flexDirection: "column",
+            gap: 8,
+            margin: "4px 0 18px",
+            padding: "12px 14px",
+            borderRadius: 12,
+            border: "2px solid #26221b",
+            background: "#f2b63c",
+            textAlign: "left",
+          }}
+        >
+          <div
+            style={{
+              display: "flex",
+              alignItems: "center",
+              gap: 7,
+              fontWeight: 700,
+              fontSize: 13,
+            }}
+          >
+            <Trophy size={16} />
+            {newAchievements.length === 1 ? "Achievement unlocked" : "Achievements unlocked"}
+          </div>
+          {newAchievements.map((a) => (
+            <div key={a.id} style={{ fontSize: 14 }}>
+              <span style={{ fontWeight: 700 }}>{a.name}</span>
+              <span style={{ opacity: 0.75 }}> · {a.description}</span>
+            </div>
+          ))}
+        </div>
+      )}
+
       <div
         style={{
           display: "flex",
@@ -280,6 +320,8 @@ export function ResultsBody({
           )}
         </div>
       )}
+
+      <MoreGames />
     </div>
   );
 }
