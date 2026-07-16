@@ -12,11 +12,22 @@ send) if `RESEND_TOPIC_ID` is missing, matching the existing RESEND_API_KEY/RESE
 handling, so it cannot quietly regress to an account-wide unsubscribe. README documents the var.
 163 tests / tsc / build green; lint warnings are pre-existing.
 
-- **OWNER ACTION REQUIRED:** set `RESEND_TOPIC_ID = bbd74af9-58e1-4758-8b26-8aba3220a142` (the
-  "Spelling Blocks" topic) in the **Vercel project**. Until then the 13:00 UTC cron returns 500 and
-  sends nothing. Chosen over a silent unscoped fallback deliberately: the list currently holds only
-  `hello@brentspore.com`, so a missed day costs nothing, whereas an unscoped send costs a real
-  subscriber's entire network subscription and cannot be undone without asking them to re-opt-in.
+- **`RESEND_TOPIC_ID` is SET** in Vercel Production by the owner (confirmed present via
+  `npx vercel@latest env ls production`). Fail-closed was chosen over a silent unscoped fallback
+  deliberately: an unscoped send costs a real subscriber their entire network subscription and
+  cannot be undone without asking them to re-opt-in, whereas a missed day costs nothing.
+- **Dry run added (`ae413b2`):** `GET /api/daily-reminder?dry_run=1` (same `CRON_SECRET` bearer
+  auth) resolves the segment + topic against Resend and returns their names, creating and sending
+  nothing. Built because the only way to exercise this route was a real broadcast to real people,
+  so a mistyped id could only surface as a silent 13:00 UTC cron failure on a list nobody watches.
+  **`vercel env ls` proves an env var is PRESENT, never that its value is CORRECT — a typo looks
+  identical.** The dry run is the only thing that settles it:
+  `curl -H "Authorization: Bearer $CRON_SECRET" "https://spellingblocks.com/api/daily-reminder?dry_run=1"`
+  — **still un-run as of this session; the owner has the secret.** Do NOT `vercel env pull` to get
+  it (dumps every live secret to plaintext; the classifier blocks it, rightly).
+- **`.env*` now gitignored.** The repo did NOT ignore `.env` files at all despite the README telling
+  you to put the Resend key in `.env.local`; verified nothing was ever committed. Note `vercel link`
+  wrote a (now-ignored) plaintext `.env.local` here — delete it if you don't want it locally.
 - Topics are account-level: Spelling Blocks `bbd74af9-58e1-4758-8b26-8aba3220a142`, The Trail Game
   `344026ed-06e6-433b-b1e4-21b604fc0570`. Both `defaultSubscription: opt_in`, which **does** cover
   contacts created before the topic existed (verified). `defaultSubscription` **cannot be changed
