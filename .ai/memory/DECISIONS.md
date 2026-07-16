@@ -62,7 +62,7 @@ If a decision should apply across multiple projects, record it in `~/.ai/memory/
 
 **Rationale:** Catches the realistic floods (a warm instance absorbs most of one source's traffic) at zero infrastructure cost, on a free daily puzzle where the worst case is some wasted Resend quota. A new service is not worth it until abuse actually appears.
 
-**Revisit if:** Real abuse shows up in the Resend logs. Then either Upstash/Vercel KV for shared counters, or Turnstile on the form.
+**Revisit if:** Real abuse shows up in the Resend logs. **Superseded 2026-07-16:** the durable upgrade now exists — the shared `synergy-capture` Worker (Durable Object counters, unspoofable `CF-Connecting-IP`; this repo's limiter trusts spoofable `x-forwarded-for` and keys by address alone). The plan is migration, not hardening in place.
 
 ---
 

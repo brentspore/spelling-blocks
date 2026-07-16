@@ -20,7 +20,8 @@ dev` and deploy inside the SSR function, so no separate `vercel dev` is needed.
 They read these environment variables (set them in `.env.local` for local dev and
 in the Vercel project for deploys):
 
-- `RESEND_API_KEY` — Resend API key
+- `RESEND_API_KEY` — Resend API key (**Full access** — contact management fails on a Sending-only key)
+- `SUBSCRIBE_SECRET` — HMAC key for the double opt-in confirm tokens (any long random string; `/api/subscribe` and `/confirm` fail closed without it)
 - `RESEND_SEGMENT_ID` — Resend segment the signups join and the reminder sends to
 - `RESEND_TOPIC_ID` — Resend topic the reminder is scoped to. Without it the
   unsubscribe link would unsubscribe the reader from every game on the Resend

@@ -18,19 +18,10 @@ Items in this file follow the structure below so that any AI tool or human editi
 
 ---
 
-### Wire GA4 analytics
-
-**Why it matters:** No usage measurement today (plays, retention, share/signup conversion), so there is no read on whether the daily loop is working.
-
-**When to revisit:** When it is worth learning how people actually play, or before any acquisition push.
-
-**Notes:** Standard site-kit item. Add the tag in `src/routes/__root.tsx` head/scripts.
-
----
 
 ### Synergy footer and GDPR footer
 
-**Why it matters:** Portfolio-standard footer (Synergy logo + GDPR/privacy line) for brand consistency and compliance. The footer is currently just the text "A Synergy game." in `Game.tsx`.
+**Why it matters:** Portfolio-standard footer (Synergy logo + GDPR/privacy line) for brand consistency and compliance. SHIPPED 2026-07-15: Game.tsx renders the Synergy-logo footer + "© 2026 Synergy. We use cookies for analytics." Remaining scope is only whatever fuller GDPR/privacy-page treatment the house standard requires beyond that line.
 
 **When to revisit:** During a branding/compliance pass, or when other portfolio sites get the same treatment.
 
@@ -45,3 +36,13 @@ Items in this file follow the structure below so that any AI tool or human editi
 **When to revisit:** If build size or SSR cold starts become a concern, or when reworking word validation.
 
 **Notes:** `src/game/dictionary.ts` filters to 3-9 letter words. A prebuilt trimmed set (or a compact structure) would replace the full list. The puzzle-validation test must keep validating against whatever list the game uses.
+
+### Migrate capture to the synergy-capture Worker
+
+**Why it matters:** The shared Worker is deployed and its contact-creation path is PROVEN (2026-07-16 21:40 UTC). This repo's in-repo capture (`/api/subscribe`, `/confirm`, `src/server/optInToken.ts`, `src/server/rateLimit.ts`, `SUBSCRIBE_SECRET` in Vercel) is the reference implementation the Worker was lifted from — it retires after migration, ending the two-copies drift that produced 2026-07-16's paired bugs.
+
+**When to revisit:** Unblocked now. Coordinate with the-trail-game's migration so the network converges in one pass.
+
+**Notes:** Point the form at `POST https://synergy-capture.brent-816.workers.dev/subscribe` with `{email, source: "spellingblocks", website}` (honeypot ships empty — a browser autofilling it silently no-ops a real signup) and map `ok`/`invalid`/`rate_limited`/`failed`. **Landmine: keep `/confirm` alive 48h past cutover** — in-repo tokens live 48h and outstanding emailed links point at it. Decide the confirm-link host first (Worker currently mints workers.dev links). Recipes + ids: `email-ops` skill.
+
+---
