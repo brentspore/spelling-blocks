@@ -22,6 +22,9 @@ in the Vercel project for deploys):
 
 - `RESEND_API_KEY` — Resend API key
 - `RESEND_SEGMENT_ID` — Resend segment the signups join and the reminder sends to
+- `RESEND_TOPIC_ID` — Resend topic the reminder is scoped to. Without it the
+  unsubscribe link would unsubscribe the reader from every game on the Resend
+  account, since `unsubscribed` is a contact-level flag rather than a per-segment one
 - `CRON_SECRET` — shared secret Vercel Cron sends as `Authorization: Bearer` to `/api/daily-reminder`
 
 The reminder cron (`vercel.json`) runs daily at 13:00 UTC (6am Pacific during

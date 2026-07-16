@@ -75,8 +75,15 @@ async function sendReminder(request: Request): Promise<Response> {
 
   const apiKey = process.env.RESEND_API_KEY;
   const segmentId = process.env.RESEND_SEGMENT_ID;
-  if (!apiKey || !segmentId) {
-    console.error("daily-reminder: RESEND_API_KEY or RESEND_SEGMENT_ID is not set");
+  // A contact's unsubscribed flag is account-wide in Resend, not per segment, so
+  // an unscoped broadcast hands the reader an unsubscribe link that silences
+  // every other game on the account too. Scoping to a topic gives them a
+  // preference page where they can drop this one and keep the rest.
+  const topicId = process.env.RESEND_TOPIC_ID;
+  if (!apiKey || !segmentId || !topicId) {
+    console.error(
+      "daily-reminder: RESEND_API_KEY, RESEND_SEGMENT_ID or RESEND_TOPIC_ID is not set",
+    );
     return json({ ok: false, error: "Not configured." }, 500);
   }
 
@@ -86,6 +93,7 @@ async function sendReminder(request: Request): Promise<Response> {
     const resend = new Resend(apiKey);
     const { data, error } = await resend.broadcasts.create({
       segmentId,
+      topicId,
       from: "Spelling Blocks <puzzle@spellingblocks.com>",
       subject: `Spelling Blocks #${puzzleNumber} is up`,
       html: renderEmail(puzzleNumber),
