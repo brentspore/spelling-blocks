@@ -49,11 +49,11 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { property: "og:title", content: "Spelling Blocks — the daily word packing puzzle" },
       { property: "og:description", content: "Twelve letter blocks. Use every one. A free daily puzzle." },
       { property: "og:type", content: "website" },
-      { property: "og:image", content: "/og.png" },
+      { property: "og:image", content: "https://storage.googleapis.com/gpt-engineer-file-uploads/attachments/og-images/e2ce1b4a-ad74-4f0b-8e11-5399fc956092" },
       { name: "twitter:card", content: "summary_large_image" },
       { name: "twitter:title", content: "Spelling Blocks — the daily word packing puzzle" },
       { name: "twitter:description", content: "Twelve letter blocks. Use every one. A free daily puzzle." },
-      { name: "twitter:image", content: "/og.png" },
+      { name: "twitter:image", content: "https://storage.googleapis.com/gpt-engineer-file-uploads/attachments/og-images/e2ce1b4a-ad74-4f0b-8e11-5399fc956092" },
     ],
     links: [
       { rel: "stylesheet", href: appCss },
