@@ -1,3 +1,4 @@
+import type { CSSProperties } from "react";
 import { COLOR_HEX, type BlockColor } from "@/game/colors";
 
 type Props = {
@@ -10,6 +11,7 @@ type Props = {
   used?: boolean;
   variant?: "tray" | "builder" | "placed";
   cornerIndex?: number;
+  flow?: number;
 };
 
 export function Block({
@@ -22,31 +24,35 @@ export function Block({
   used,
   variant = "tray",
   cornerIndex,
+  flow,
 }: Props) {
   const bg = COLOR_HEX[color];
   const cls = [
     "sb-block",
     variant === "tray" && "sb-block--tray",
+    variant === "builder" && "sb-block--builder",
     variant === "placed" && "sb-block--placed",
     used && "sb-block--used",
   ]
     .filter(Boolean)
     .join(" ");
   const fontSize = Math.round(size * 0.5);
+  const style = {
+    width: size,
+    height: size,
+    "--c": bg,
+    "--rot": `${rotate}deg`,
+    ...(flow !== undefined ? { "--wi": flow } : {}),
+    fontSize,
+    lineHeight: 1,
+  } as CSSProperties;
   return (
     <button
       type="button"
       onClick={onClick}
       disabled={disabled || used}
       className={cls}
-      style={{
-        width: size,
-        height: size,
-        background: bg,
-        transform: `rotate(${rotate}deg)`,
-        fontSize,
-        lineHeight: 1,
-      }}
+      style={style}
       aria-label={`Letter ${letter}`}
     >
       {letter}

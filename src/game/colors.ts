@@ -8,9 +8,20 @@ export const COLOR_HEX: Record<BlockColor, string> = {
   cherry: "#C7402D",
 };
 
-// Stable color per block index for a puzzle.
-export function colorFor(index: number, seed: number): BlockColor {
-  // Simple hash
-  const v = (index * 2654435761 + seed * 1013904223) >>> 0;
-  return BLOCK_COLORS[v % BLOCK_COLORS.length];
+// A composed spread of colours for one puzzle: every colour appears as evenly
+// as possible, then a deterministic shuffle so no two puzzles look alike.
+// Beats per-block random, which clumps one colour and starves another.
+export function assignColors(n: number, seed: number): BlockColor[] {
+  const colors: BlockColor[] = [];
+  for (let i = 0; i < n; i++) colors.push(BLOCK_COLORS[i % BLOCK_COLORS.length]);
+  let s = (seed * 2654435761 + 1) >>> 0;
+  const rng = () => {
+    s = (s * 1664525 + 1013904223) >>> 0;
+    return s / 4294967296;
+  };
+  for (let i = colors.length - 1; i > 0; i--) {
+    const j = Math.floor(rng() * (i + 1));
+    [colors[i], colors[j]] = [colors[j], colors[i]];
+  }
+  return colors;
 }

@@ -19,7 +19,14 @@
 
 html,
 body {
-  background: #f1e7d0;
+  /* A warm paper tabletop: cream, lit softly from the top, with a faint grain
+     so the blocks rest on a surface instead of a flat field. */
+  background-color: #ecdfc0;
+  background-image:
+    radial-gradient(135% 95% at 50% -4%, rgba(255, 255, 255, 0.85), rgba(255, 255, 255, 0) 62%),
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix type='matrix' values='0 0 0 0 0.149 0 0 0 0 0.133 0 0 0 0 0.106 0 0 0 0.7 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.5'/%3E%3C/svg%3E");
+  background-repeat: no-repeat, repeat;
+  background-attachment: fixed;
   color: #26221b;
   font-family: "Schibsted Grotesk", ui-sans-serif, system-ui, sans-serif;
   -webkit-font-smoothing: antialiased;
@@ -36,7 +43,9 @@ button {
   cursor: pointer;
 }
 
-/* Blocks */
+/* Blocks — physical, not printed: a beveled face lit from above, real
+   thickness, and a soft shadow on the table. --c is the block colour and
+   --rot its resting tilt, both set inline per block. */
 .sb-block {
   display: inline-flex;
   align-items: center;
@@ -44,33 +53,73 @@ button {
   font-family: "Archivo Black", sans-serif;
   color: #26221b;
   border: 2px solid #26221b;
-  border-radius: 10px;
-  box-shadow: 3px 4px 0 #26221b;
+  border-radius: 14px;
+  background:
+    linear-gradient(158deg, rgba(255, 255, 255, 0.32), rgba(255, 255, 255, 0) 46%),
+    linear-gradient(158deg, rgba(0, 0, 0, 0) 54%, rgba(0, 0, 0, 0.24)), var(--c, #cbb);
+  box-shadow:
+    inset 0 3px 0 rgba(255, 255, 255, 0.32),
+    inset 0 -5px 0 rgba(0, 0, 0, 0.18),
+    inset 3px 0 0 rgba(255, 255, 255, 0.1),
+    inset -3px 0 0 rgba(0, 0, 0, 0.1),
+    0 6px 0 #26221b,
+    0 10px 14px rgba(38, 34, 27, 0.26);
   user-select: none;
   position: relative;
+  transform: rotate(var(--rot, 0deg));
   text-shadow:
-    0 1px 0 rgba(255, 255, 255, 0.25),
-    inset 0 -1px 0 rgba(0, 0, 0, 0.15);
+    0 1px 0 rgba(255, 255, 255, 0.35),
+    0 -1px 0 rgba(0, 0, 0, 0.16);
   transition:
-    transform 0.18s cubic-bezier(0.34, 1.56, 0.64, 1),
-    box-shadow 0.15s ease;
+    transform 0.16s cubic-bezier(0.34, 1.56, 0.64, 1),
+    box-shadow 0.16s ease;
 }
 
 .sb-block--tray {
   cursor: pointer;
 }
+/* Press the block down into the table; its thickness compresses. */
 .sb-block--tray:active {
-  transform: translate(2px, 2px) scale(0.97);
-  box-shadow: 1px 2px 0 #26221b;
+  transform: rotate(var(--rot, 0deg)) translateY(4px) scale(0.98);
+  box-shadow:
+    inset 0 2px 0 rgba(255, 255, 255, 0.28),
+    inset 0 -2px 0 rgba(0, 0, 0, 0.2),
+    0 2px 0 #26221b,
+    0 3px 6px rgba(38, 34, 27, 0.28);
 }
 .sb-block--used {
-  opacity: 0.25;
+  opacity: 0.22;
   pointer-events: none;
-  filter: grayscale(0.4);
+  filter: grayscale(0.5);
 }
+
+/* Builder blocks pop in with a spring as you add each letter. */
+.sb-block--builder {
+  animation: sb-pop 0.26s cubic-bezier(0.34, 1.7, 0.5, 1) both;
+}
+@keyframes sb-pop {
+  0% {
+    transform: scale(0.4);
+    opacity: 0;
+  }
+  70% {
+    transform: scale(1.08);
+    opacity: 1;
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+/* Placed blocks: settled into the wall, a touch flatter than a loose block. */
 .sb-block--placed {
-  border-radius: 8px;
-  box-shadow: 2px 2px 0 #26221b;
+  border-radius: 11px;
+  /* Tight contact shadow so stacked courses don't clip the row below. */
+  box-shadow:
+    inset 0 2px 0 rgba(255, 255, 255, 0.28),
+    inset 0 -3px 0 rgba(0, 0, 0, 0.16),
+    0 3px 0 #26221b,
+    0 3px 4px rgba(38, 34, 27, 0.2);
 }
 
 .sb-shake {
@@ -95,15 +144,68 @@ button {
   }
 }
 
+/* A placed word drops onto the wall and lands with a little weight. */
 .sb-settle {
-  animation: sb-settle 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+  animation: sb-settle 0.42s cubic-bezier(0.3, 1.5, 0.5, 1);
 }
 @keyframes sb-settle {
   0% {
-    transform: translateY(-6px);
+    transform: translateY(-16px);
+    opacity: 0.4;
+  }
+  60% {
+    transform: translateY(2px);
   }
   100% {
     transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+/* The wall's finish: a light sweep and a quick wave when the last block lands. */
+.sb-wall__shine {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  border-radius: 12px;
+  opacity: 0;
+  background: linear-gradient(
+    105deg,
+    transparent 40%,
+    rgba(255, 255, 255, 0.55) 50%,
+    transparent 60%
+  );
+  background-size: 250% 100%;
+  background-position: 150% 0;
+}
+.sb-wall--won .sb-wall__shine {
+  animation: sb-sweep 1s ease 0.12s;
+}
+@keyframes sb-sweep {
+  0% {
+    background-position: 150% 0;
+    opacity: 0;
+  }
+  12%,
+  82% {
+    opacity: 1;
+  }
+  100% {
+    background-position: -60% 0;
+    opacity: 0;
+  }
+}
+.sb-wall--won .sb-block--placed {
+  animation: sb-wave 0.55s ease;
+  animation-delay: calc(var(--wi, 0) * 40ms);
+}
+@keyframes sb-wave {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  45% {
+    transform: translateY(-9px);
   }
 }
 
@@ -229,6 +331,7 @@ button {
   .sb-btn,
   .sb-shake,
   .sb-settle,
+  .sb-wall__shine,
   .sb-modal,
   .sb-toast {
     animation: none !important;

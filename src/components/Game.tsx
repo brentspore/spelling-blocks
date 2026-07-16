@@ -4,7 +4,7 @@ import type { Puzzle } from "@/data/puzzles";
 import { daily, practice } from "@/data/puzzles";
 import { getTodayPuzzle } from "@/game/daily";
 import { isWord, getDictionary } from "@/game/dictionary";
-import { colorFor, type BlockColor } from "@/game/colors";
+import { assignColors, type BlockColor } from "@/game/colors";
 import { clack, winChord, setMuted, isMuted } from "@/game/audio";
 import {
   getDailyState,
@@ -50,7 +50,7 @@ export function Game() {
   // Colors per block index, stable per puzzle
   const seed = mode.kind === "daily" ? mode.number : 10000 + practiceIndex;
   const blockColors: BlockColor[] = useMemo(
-    () => puzzle.blocks.map((_, i) => colorFor(i, seed)),
+    () => assignColors(puzzle.blocks.length, seed),
     [puzzle, seed],
   );
   const rotations = useMemo(
@@ -312,6 +312,19 @@ export function Game() {
 
   const isPractice = mode.kind === "practice";
 
+  // The wall reads as hand-stacked: a subtle, deterministic per-course offset
+  // and tilt so it looks built rather than printed on a grid.
+  const courseTransform = (wi: number) => {
+    const dx = ((wi * 7) % 5) - 2;
+    const rot = (((wi * 13) % 3) - 1) * 0.5;
+    return `translateX(${dx}px) rotate(${rot}deg)`;
+  };
+  // Flat index of each placed block, so the win-wave can roll across the wall.
+  const waveFlat = useMemo(() => {
+    let n = 0;
+    return placedIndices.map((arr) => arr.map(() => n++));
+  }, [placedIndices]);
+
   return (
     <div style={{ maxWidth: 480, margin: "0 auto", padding: "12px 16px 40px", minHeight: "100vh" }}>
       {/* Header */}
@@ -456,37 +469,69 @@ export function Game() {
           </div>
         )}
         <div style={{ display: "flex", gap: 8, justifyContent: "center", marginTop: 8 }}>
-          <button
-            className="sb-btn sb-btn--ghost"
-            onClick={shuffleTray}
-            aria-label="Shuffle"
-            style={{ minWidth: 48 }}
-          >
-            <Shuffle size={18} />
-          </button>
-          <button className="sb-btn" onClick={placeWord} disabled={builder.length < 3}>
-            Place word
-          </button>
+          {won ? (
+            <button className="sb-btn" onClick={() => setShowResults(true)}>
+              See results
+            </button>
+          ) : (
+            <>
+              <button
+                className="sb-btn sb-btn--ghost"
+                onClick={shuffleTray}
+                aria-label="Shuffle"
+                style={{ minWidth: 48 }}
+              >
+                <Shuffle size={18} />
+              </button>
+              <button className="sb-btn" onClick={placeWord} disabled={builder.length < 3}>
+                Place word
+              </button>
+            </>
+          )}
         </div>
       </div>
 
-      {/* Word wall */}
+      {/* Word wall — a structure you build upward, course by course */}
       <div
+        className={won ? "sb-wall sb-wall--won" : "sb-wall"}
         style={{
+          position: "relative",
           marginTop: 20,
           minHeight: 180,
           display: "flex",
-          flexDirection: "column",
-          justifyContent: "flex-end",
+          flexDirection: "column-reverse",
+          justifyContent: "flex-start",
           alignItems: "center",
-          gap: 4,
-          padding: 10,
+          gap: 3,
+          padding: 12,
           background: "rgba(38,34,27,0.04)",
           borderRadius: 12,
         }}
       >
         {placed.length === 0 ? (
-          <span style={{ opacity: 0.4, fontSize: 13 }}>your wall builds here</span>
+          <div
+            style={{
+              display: "flex",
+              flexDirection: "column",
+              alignItems: "center",
+              gap: 12,
+            }}
+          >
+            <div style={{ display: "flex", gap: 4 }}>
+              {[0, 1, 2, 3].map((i) => (
+                <div
+                  key={i}
+                  style={{
+                    width: 40,
+                    height: 40,
+                    borderRadius: 10,
+                    border: "2px dashed rgba(38,34,27,0.22)",
+                  }}
+                />
+              ))}
+            </div>
+            <span style={{ opacity: 0.45, fontSize: 13 }}>your wall builds here</span>
+          </div>
         ) : (
           placed.map((word, wi) => (
             <button
@@ -499,6 +544,7 @@ export function Game() {
                 background: "transparent",
                 border: "none",
                 padding: 0,
+                transform: courseTransform(wi),
                 cursor: won ? "default" : "pointer",
               }}
               disabled={won}
@@ -511,11 +557,13 @@ export function Game() {
                   color={blockColors[bi]}
                   size={wallBlockSize}
                   variant="placed"
+                  flow={waveFlat[wi]?.[li]}
                 />
               ))}
             </button>
           ))
         )}
+        <div className="sb-wall__shine" aria-hidden="true" />
       </div>
 
       {/* Footer */}
