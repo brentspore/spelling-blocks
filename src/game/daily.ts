@@ -1,15 +1,26 @@
 import { daily } from "@/data/puzzles";
 
-export const LAUNCH_DATE = new Date(2026, 0, 1); // Jan 1, 2026 local
+export const LAUNCH_DATE = "2026-01-01";
+const PUZZLE_TIME_ZONE = "America/Los_Angeles";
+const puzzleDateFormatter = new Intl.DateTimeFormat("en-US", {
+  timeZone: PUZZLE_TIME_ZONE,
+  year: "numeric",
+  month: "numeric",
+  day: "numeric",
+});
+
+function dateOrdinal(date: Date): number {
+  const parts = puzzleDateFormatter.formatToParts(date);
+  const year = Number(parts.find((part) => part.type === "year")?.value);
+  const month = Number(parts.find((part) => part.type === "month")?.value);
+  const day = Number(parts.find((part) => part.type === "day")?.value);
+  return Math.floor(Date.UTC(year, month - 1, day) / 86400000);
+}
 
 export function getTodayPuzzleNumber(now = new Date()): number {
-  const start = new Date(
-    LAUNCH_DATE.getFullYear(),
-    LAUNCH_DATE.getMonth(),
-    LAUNCH_DATE.getDate(),
-  ).getTime();
-  const today = new Date(now.getFullYear(), now.getMonth(), now.getDate()).getTime();
-  const days = Math.floor((today - start) / 86400000);
+  const [year, month, day] = LAUNCH_DATE.split("-").map(Number);
+  const launchOrdinal = Math.floor(Date.UTC(year, month - 1, day) / 86400000);
+  const days = dateOrdinal(now) - launchOrdinal;
   return Math.max(1, days + 1);
 }
 
