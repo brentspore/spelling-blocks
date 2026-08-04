@@ -6,6 +6,12 @@ import { ExternalLink } from "lucide-react";
 // a random three of these.
 const GAMES: { name: string; tagline: string; url: string; initial: string }[] = [
   {
+    name: "Brick Smasher",
+    tagline: "Daily wall of neon glass",
+    url: "https://onepagetoys.com/toys/brick-smasher/",
+    initial: "B",
+  },
+  {
     name: "The Trail Game",
     tagline: "Daily one-line path puzzle",
     url: "https://thetrailgame.com",
