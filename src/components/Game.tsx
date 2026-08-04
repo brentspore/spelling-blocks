@@ -42,9 +42,9 @@ export function Game() {
 
   const today = useMemo(() => getTodayPuzzle(), []);
   const [mode, setMode] = useState<Mode>({ kind: "daily", number: today.number });
-  const [practiceIndex, setPracticeIndex] = useState<number>(() =>
-    Math.floor(Math.random() * practice.length),
-  );
+  // Keep the server and first client render identical. A random practice
+  // puzzle is selected only when the player explicitly starts practice.
+  const [practiceIndex, setPracticeIndex] = useState(0);
 
   const puzzle: Puzzle =
     mode.kind === "daily" ? daily[(mode.number - 1) % daily.length] : practice[practiceIndex];

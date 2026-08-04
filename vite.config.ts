@@ -40,8 +40,11 @@ export default defineConfig(({ command }) => ({
       // Redirect the bundled server entry to src/server.ts (our SSR error wrapper).
       server: { entry: "server" },
     }),
-    // Nitro builds the deployable server output (Cloudflare module preset). Build only.
-    ...(command === "build" ? [nitro({ defaultPreset: "cloudflare-module" })] : []),
+    // Vercel needs Nitro's Build Output API. Local production checks and
+    // `vite preview` use TanStack Start's standard dist/client + dist/server.
+    ...(command === "build" && process.env.VERCEL
+      ? [nitro({ defaultPreset: "cloudflare-module" })]
+      : []),
     viteReact(),
   ],
 }));
