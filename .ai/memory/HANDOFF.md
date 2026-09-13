@@ -1,5 +1,17 @@
 # Handoff
 
+**State (2026-09-12): practice can no longer preview a daily (`28664d3`, live-verified).** The 41
+hand-written practice puzzles reused daily words (40 of 41 shared all but one word with a daily) and
+the one-page-toys feeder shipped all 91 dailies WITH their answers, so its hint gave daily solutions.
+Practice is now 120 puzzles from `scripts/gen-practice.mjs` (40 per difficulty, hand-picked concrete
+words, no daily word, every letter set 4+ letters from every daily), enforced in `puzzles.test.ts`;
+`scripts/build-feeder-data.mjs` rebuilds the feeder's `data.js` from practice only (OPT `049a772`).
+Dailies unchanged. Rule is global: DECISIONS 2026-09-12 "practice must never preview the daily".
+- ⚠ **OPEN, owner's call: the daily list LOOPS every 91 days** (`idx = (n-1) % 91`); the first
+  returning player sees an already-solved puzzle on **2026-10-15**. Needs more dailies APPENDED.
+- ⚠ **OPEN bug: rollover is Pacific midnight (`daily.ts`), but both countdowns (site and feeder)
+  count to the player's LOCAL midnight.**
+
 **State (2026-08-04):** Fixed `dist-check failed with exit status 1`. Nitro had redirected every production build to `.output`, leaving the checker and `vite preview` looking for the missing standard `dist/server/server.js`. Nitro now runs only when `VERCEL` is set; ordinary builds emit TanStack's standard `dist` output. Practice mode also initializes deterministically so SSR and hydration agree, then chooses randomly only on the player's practice action. The Pacific-time daily boundary fix and regression tests remain in place. Verify both paths with `bun run build` and `VERCEL=1 bun run build`.
 
 **State (2026-07-16, evening — memory consolidation + address fix already live).** Since the entry below: (1) the daily email now prints the postal address `7511 Greenwood Ave North, Unit 4147, Seattle, WA 98103` (Anytime Mailbox; PO-box swap planned), held by **4 vitest tests (167 total)** — it had shipped with an unsubscribe link but NO postal address, which CAN-SPAM requires and which nothing could catch because the email is assembled in code. (2) **CRITICAL OPEN: the daily reminder has NEVER actually sent** — the only broadcast the route ever created (13:01 UTC 2026-07-16) sits in Resend as a `draft` named "Untitled". Hypothesis (unproven): Resend refused the bulk send without the address; **first check next session: `list-broadcasts` after the 13:00 UTC cron — status must be `sent`, not `draft`**. The owner's earlier dry-run 401 was an empty `$CRON_SECRET` in the shell, not a code bug (route auth proven locally all three ways). (3) The shared **synergy-capture Worker is deployed and its contact-creation path PROVEN** (2026-07-16 21:40 UTC) — this repo's `/api/subscribe` + `/confirm` + `optInToken.ts` + `rateLimit.ts` retire after migration (see BACKLOG; keep `/confirm` alive 48h past cutover). (4) reference.md/README/DECISIONS/BACKLOG updated to current truth (RESEND_TOPIC_ID + SUBSCRIBE_SECRET documented, GA4 item closed, Resend ids inline). Day-2 email ops: global `email-ops` skill.
