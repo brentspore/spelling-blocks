@@ -104,50 +104,9 @@ const DAILY_SOLUTIONS: SolutionSet[] = [
   ["JOG", "MAP", "WIN", "CUE"],
 ];
 
-// 40 practice solutions.
-const PRACTICE_SOLUTIONS: SolutionSet[] = [
-  ["PLANET", "MARKET"],
-  ["JUNGLE", "PLANET"],
-  ["ROCKET", "JUNGLE"],
-  ["POCKET", "PLANET"],
-  ["MARBLE", "POCKET"],
-  ["CANDLE", "POCKET"],
-  ["WINTER", "JACKET"],
-  ["SUMMER", "BASKET"],
-  ["GOLDEN", "MARBLE"],
-  ["SILVER", "PLANET"],
-  ["FROZEN", "PLANET"],
-  ["BRIGHT", "PLANET"],
-  ["MODERN", "JACKET"],
-  ["CLEVER", "PLANET"],
-  ["ORANGE", "PLANET"],
-  ["CASTLE", "MARBLE"],
-  ["DRAGON", "PLANET"],
-  ["FOREST", "MARBLE"],
-  ["GARDEN", "POCKET"],
-  ["MASTER", "JUNGLE"],
-  ["QUICK", "WOLF", "JAM"],
-  ["BRAVE", "WOLF", "JIG"],
-  ["SPICY", "GOAT", "JAM"],
-  ["FUNKY", "WOLF", "JAM"],
-  ["HAPPY", "OVEN", "JAM"],
-  ["FANCY", "WOLF", "JIB"],
-  ["MAGIC", "OVEN", "JAM"],
-  ["SMOKY", "WOLF", "JAM"],
-  ["PROUD", "GOAT", "JAM"],
-  ["FRESH", "GOAT", "JAM"],
-  ["GRAND", "OVEN", "JAM"],
-  ["CHIEF", "OVEN", "JAM"],
-  ["GIANT", "OVEN", "JAM"],
-  ["BEACH", "OVEN", "JAM"],
-  ["CLOUD", "OVEN", "JAM"],
-  ["SWEET", "OVEN", "JAM"],
-  ["JOG", "MAP", "TEN", "CUB"],
-  ["FIX", "JAM", "PUB", "OWE"],
-  ["JAB", "COW", "MUD", "PEG"],
-  ["FIG", "JAR", "OWL", "CUB"],
-  ["ELF", "JAB", "COW", "GUM"],
-];
+// Practice lives in its own GENERATED file (scripts/gen-practice.mjs) so it can
+// never preview a daily; the rules are in that script and in puzzles.test.ts.
+import { PRACTICE_SOLUTIONS } from "./practice-solutions";
 
 // Mulberry32 seeded RNG for deterministic shuffles.
 function mulberry32(seed: number) {

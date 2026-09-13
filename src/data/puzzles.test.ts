@@ -56,3 +56,35 @@ describe("practice puzzles", () => {
     it(`practice #${i + 1} — ${p.solution.join(" ")}`, () => validatePuzzle(p));
   });
 });
+
+/* ⚠ Practice is unlimited, so anything it shares with the dailies is something a
+ * keen player can learn ahead of time. A puzzle is really its set of 12 letters
+ * (any valid split wins, and the tray shuffles), so letter sets are compared,
+ * not word lists. */
+describe("practice never previews a daily", () => {
+  const letterGap = (a: string, b: string) => {
+    const count = (s: string) => { const m: Record<string, number> = {}; for (const c of s) m[c] = (m[c] || 0) + 1; return m; };
+    const ma = count(a), mb = count(b);
+    let shared = 0;
+    for (const c in ma) shared += Math.min(ma[c], mb[c] || 0);
+    return 12 - shared;
+  };
+  const dailyWords = new Set(daily.flatMap(p => p.solution.map(w => w.toUpperCase())));
+
+  it("uses no word from any daily solution", () => {
+    const reused = practice.flatMap(p => p.solution.map(w => w.toUpperCase())).filter(w => dailyWords.has(w));
+    expect(reused).toEqual([]);
+  });
+
+  it("differs from every daily by at least 4 letters", () => {
+    const close: string[] = [];
+    for (const p of practice) for (const d of daily) {
+      if (letterGap(p.blocks.join(""), d.blocks.join("")) < 4) close.push(`${p.solution.join("+")} ~ ${d.solution.join("+")}`);
+    }
+    expect(close).toEqual([]);
+  });
+
+  it("has enough of each difficulty to feel unlimited", () => {
+    for (const par of [2, 3, 4]) expect(practice.filter(p => p.par === par).length).toBeGreaterThanOrEqual(30);
+  });
+});
