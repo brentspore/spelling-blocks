@@ -22,6 +22,9 @@ services:
     image: spelling-blocks-dev
     container_name: spelling-blocks-dev
     init: true
+    # Docker's shared network: a network per project runs Docker out of address
+    # ranges after about 30 repos, and these servers never talk to each other.
+    network_mode: bridge
     command: sh -c "bun install --no-save && exec bun run dev --host 0.0.0.0 --port 5138 --strictPort"
     ports:
       - "127.0.0.1:5138:5138"
