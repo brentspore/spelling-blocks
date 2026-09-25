@@ -1,0 +1,33 @@
+# Dev server in Docker over the LIVE working tree: edit a file on the Mac and
+# the page hot-reloads, same as `start`. node_modules lives in a Docker volume
+# (Linux builds), so it never clashes with the Mac's own node_modules.
+#
+#   docker compose up -d        -> http://localhost:5138
+#   docker compose logs -f      watch the server
+#   docker compose down         stop it
+#
+# The first start installs dependencies (under a minute); later starts take
+# seconds. Every start re-runs the install, so a pulled dependency change is
+# picked up without a rebuild. It uses --no-save: the container never rewrites
+# the lockfile (its Linux npm/bun would otherwise churn it).
+#
+# Local only. `git push` deploys through the host as always; Docker gets nothing.
+# Port 5138 is this repo's slot in ~/.ai/skills/docker/ports.md.
+name: spelling-blocks
+services:
+  dev:
+    build:
+      context: .
+      dockerfile: Dockerfile.dev
+    image: spelling-blocks-dev
+    container_name: spelling-blocks-dev
+    init: true
+    command: sh -c "bun install --no-save && exec bun run dev --host 0.0.0.0 --port 5138 --strictPort"
+    ports:
+      - "127.0.0.1:5138:5138"
+    volumes:
+      - .:/app
+      - node_modules:/app/node_modules
+      - ${HOME}/.bun/install/cache:/home/node/.bun/install/cache
+volumes:
+  node_modules:
