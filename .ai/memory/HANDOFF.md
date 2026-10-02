@@ -1,5 +1,7 @@
 # Handoff
 
+**2026-10-02:** TanStack Start 1.168.28 → 1.168.60 (React Router 1.170.41, router plugin 1.168.42) because Vercel now refuses to build any lockfile pinning a version hit by GHSA-qx66-fv34-fjm8 (reflected XSS); the only code change is the root error component typing `error` as `unknown`.
+
 **State (2026-09-12): practice can no longer preview a daily (`28664d3`, live-verified).** The 41
 hand-written practice puzzles reused daily words (40 of 41 shared all but one word with a daily) and
 the one-page-toys feeder shipped all 91 dailies WITH their answers, so its hint gave daily solutions.

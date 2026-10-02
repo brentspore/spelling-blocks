@@ -28,7 +28,7 @@ function NotFoundComponent() {
   );
 }
 
-function ErrorComponentUI({ reset }: { error: Error; reset: () => void }) {
+function ErrorComponentUI({ reset }: { error: unknown; reset: () => void }) {
   return (
     <div
       style={{

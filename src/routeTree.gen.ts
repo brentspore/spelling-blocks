@@ -9,29 +9,29 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
-import { Route as ConfirmRouteImport } from './routes/confirm'
 import { Route as IndexRouteImport } from './routes/index'
-import { Route as ApiSubscribeRouteImport } from './routes/api/subscribe'
+import { Route as ConfirmRouteImport } from './routes/confirm'
 import { Route as ApiDailyReminderRouteImport } from './routes/api/daily-reminder'
+import { Route as ApiSubscribeRouteImport } from './routes/api/subscribe'
 
-const ConfirmRoute = ConfirmRouteImport.update({
-  id: '/confirm',
-  path: '/confirm',
-  getParentRoute: () => rootRouteImport,
-} as any)
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
-const ApiSubscribeRoute = ApiSubscribeRouteImport.update({
-  id: '/api/subscribe',
-  path: '/api/subscribe',
+const ConfirmRoute = ConfirmRouteImport.update({
+  id: '/confirm',
+  path: '/confirm',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ApiDailyReminderRoute = ApiDailyReminderRouteImport.update({
   id: '/api/daily-reminder',
   path: '/api/daily-reminder',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiSubscribeRoute = ApiSubscribeRouteImport.update({
+  id: '/api/subscribe',
+  path: '/api/subscribe',
   getParentRoute: () => rootRouteImport,
 } as any)
 
@@ -71,13 +71,6 @@ export interface RootRouteChildren {
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
-    '/confirm': {
-      id: '/confirm'
-      path: '/confirm'
-      fullPath: '/confirm'
-      preLoaderRoute: typeof ConfirmRouteImport
-      parentRoute: typeof rootRouteImport
-    }
     '/': {
       id: '/'
       path: '/'
@@ -85,11 +78,11 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/api/subscribe': {
-      id: '/api/subscribe'
-      path: '/api/subscribe'
-      fullPath: '/api/subscribe'
-      preLoaderRoute: typeof ApiSubscribeRouteImport
+    '/confirm': {
+      id: '/confirm'
+      path: '/confirm'
+      fullPath: '/confirm'
+      preLoaderRoute: typeof ConfirmRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/api/daily-reminder': {
@@ -97,6 +90,13 @@ declare module '@tanstack/react-router' {
       path: '/api/daily-reminder'
       fullPath: '/api/daily-reminder'
       preLoaderRoute: typeof ApiDailyReminderRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/subscribe': {
+      id: '/api/subscribe'
+      path: '/api/subscribe'
+      fullPath: '/api/subscribe'
+      preLoaderRoute: typeof ApiSubscribeRouteImport
       parentRoute: typeof rootRouteImport
     }
   }
