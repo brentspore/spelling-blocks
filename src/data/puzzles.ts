@@ -9,7 +9,10 @@ export type Puzzle = {
 
 type SolutionSet = string[];
 
-// 90 daily solutions. Each entry's letters must sum to 12.
+// The ORIGINAL 91 daily solutions. Each entry's letters must sum to 12.
+// ⚠ Frozen: puzzles #1-#281 loop through these (dailyIndex in src/game/daily.ts),
+// so editing, reordering or adding a row here changes days already played.
+// New dailies go in daily-extension.ts, via scripts/gen-dailies.mjs.
 const DAILY_SOLUTIONS: SolutionSet[] = [
   ["PLANET", "WHISKY"],
   ["JACKET", "PRISMS"],
@@ -107,6 +110,7 @@ const DAILY_SOLUTIONS: SolutionSet[] = [
 // Practice lives in its own GENERATED file (scripts/gen-practice.mjs) so it can
 // never preview a daily; the rules are in that script and in puzzles.test.ts.
 import { PRACTICE_SOLUTIONS } from "./practice-solutions";
+import { DAILY_EXTENSION } from "./daily-extension";
 
 // Mulberry32 seeded RNG for deterministic shuffles.
 function mulberry32(seed: number) {
@@ -142,5 +146,9 @@ function buildPuzzle(solution: string[], seed: number): Puzzle {
   };
 }
 
-export const daily: Puzzle[] = DAILY_SOLUTIONS.map((sol, i) => buildPuzzle(sol, 1000 + i));
+// The extension continues the seed sequence, so the original 91 keep their exact
+// block order.
+export const daily: Puzzle[] = [...DAILY_SOLUTIONS, ...DAILY_EXTENSION].map((sol, i) =>
+  buildPuzzle(sol, 1000 + i),
+);
 export const practice: Puzzle[] = PRACTICE_SOLUTIONS.map((sol, i) => buildPuzzle(sol, 5000 + i));

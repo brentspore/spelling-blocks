@@ -61,6 +61,51 @@ describe("practice puzzles", () => {
  * keen player can learn ahead of time. A puzzle is really its set of 12 letters
  * (any valid split wins, and the tray shuffles), so letter sets are compared,
  * not word lists. */
+/* The appended dailies are meant for players who have already been through the
+ * original 91, so they must not feel like reruns of them, or of each other.
+ * scripts/gen-dailies.mjs follows these rules; this keeps a hand edit honest. */
+describe("appended dailies are fresh", () => {
+  const original = daily.slice(0, 91);
+  const extension = daily.slice(91);
+  const gap = (a: Puzzle, b: Puzzle) => {
+    const count = (s: string[]) => {
+      const m: Record<string, number> = {};
+      for (const c of s) m[c] = (m[c] || 0) + 1;
+      return m;
+    };
+    const ma = count(a.blocks),
+      mb = count(b.blocks);
+    let shared = 0;
+    for (const c in ma) shared += Math.min(ma[c], mb[c] || 0);
+    return 12 - shared;
+  };
+
+  it("uses no word from the original dailies", () => {
+    const seen = new Set(original.flatMap((p) => p.solution));
+    expect(extension.flatMap((p) => p.solution).filter((w) => seen.has(w))).toEqual([]);
+  });
+
+  it("differs from every original daily by at least 4 letters", () => {
+    const close = extension.flatMap((e) =>
+      original
+        .filter((o) => gap(e, o) < 4)
+        .map((o) => `${e.solution.join("+")} ~ ${o.solution.join("+")}`),
+    );
+    expect(close).toEqual([]);
+  });
+
+  it("differs from every other appended daily by at least 3 letters, sharing at most one word", () => {
+    const close: string[] = [];
+    extension.forEach((a, i) =>
+      extension.slice(i + 1).forEach((b) => {
+        if (gap(a, b) < 3 || a.solution.filter((w) => b.solution.includes(w)).length > 1)
+          close.push(`${a.solution.join("+")} ~ ${b.solution.join("+")}`);
+      }),
+    );
+    expect(close).toEqual([]);
+  });
+});
+
 describe("practice never previews a daily", () => {
   const letterGap = (a: string, b: string) => {
     const count = (s: string) => { const m: Record<string, number> = {}; for (const c of s) m[c] = (m[c] || 0) + 1; return m; };

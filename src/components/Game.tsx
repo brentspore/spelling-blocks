@@ -2,7 +2,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { HelpCircle, BarChart2, Settings as SettingsIcon, Shuffle } from "lucide-react";
 import type { Puzzle } from "@/data/puzzles";
 import { daily, practice } from "@/data/puzzles";
-import { getTodayPuzzle, msUntilTomorrow, formatCountdown } from "@/game/daily";
+import { dailyIndex, getTodayPuzzle, msUntilTomorrow, formatCountdown } from "@/game/daily";
 import { isWord, getDictionary } from "@/game/dictionary";
 import { assignColors, type BlockColor } from "@/game/colors";
 import { clack, winChord, setMuted, isMuted } from "@/game/audio";
@@ -47,7 +47,7 @@ export function Game() {
   const [practiceIndex, setPracticeIndex] = useState(0);
 
   const puzzle: Puzzle =
-    mode.kind === "daily" ? daily[(mode.number - 1) % daily.length] : practice[practiceIndex];
+    mode.kind === "daily" ? daily[dailyIndex(mode.number)] : practice[practiceIndex];
 
   // Colors per block index, stable per puzzle
   const seed = mode.kind === "daily" ? mode.number : 10000 + practiceIndex;

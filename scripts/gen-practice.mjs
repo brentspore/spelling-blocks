@@ -37,7 +37,9 @@ const SPICE = new Set("JQXZKWYVFB");
 // ------------------------------------------------------------------ dailies
 const src = fs.readFileSync("src/data/puzzles.ts", "utf8");
 const dailyBlock = src.slice(src.indexOf("const DAILY_SOLUTIONS"), src.indexOf("];", src.indexOf("const DAILY_SOLUTIONS")));
-const dailies = [...dailyBlock.matchAll(/\[([^\[\]]+)\]/g)].map(m => [...m[1].matchAll(/"([A-Z]+)"/g)].map(x => x[1])).filter(x => x.length);
+const parseSets = text => [...text.matchAll(/\[([^\[\]]+)\]/g)].map(m => [...m[1].matchAll(/"([A-Z]+)"/g)].map(x => x[1])).filter(x => x.length);
+// The appended dailies (scripts/gen-dailies.mjs) count too: practice must not preview them either.
+const dailies = [...parseSets(dailyBlock), ...parseSets(fs.readFileSync("src/data/daily-extension.ts", "utf8").split("DAILY_EXTENSION")[1])];
 const dailyWords = new Set(dailies.flat());
 
 export function letterGap(a, b) {
