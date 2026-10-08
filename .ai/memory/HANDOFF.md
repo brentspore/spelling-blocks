@@ -1,5 +1,13 @@
 # Handoff
 
+**Last updated: 2026-10-08.** The daily reminder now books its broadcast for 8 AM Pacific through
+Resend's `scheduledAt` (`c4a1cfc`, `src/lib/send-time.ts`), matching the rest of the network; the
+Vercel cron stays at 13:00 UTC, which is before 8 AM Pacific in both seasons. Puzzle number is taken at
+the send time. ✅ **The old "daily has never sent" worry is resolved:** Resend shows a `sent`
+broadcast every day since 2026-07-17 (84 by 2026-10-08); the lone `draft` is the 07-16 one, from
+before the postal address. ⚠ First booked send is 2026-10-09: check `list-broadcasts` shows `sent` at
+15:00 UTC.
+
 **2026-10-02:** TanStack Start 1.168.28 → 1.168.60 (React Router 1.170.41, router plugin 1.168.42) because Vercel now refuses to build any lockfile pinning a version hit by GHSA-qx66-fv34-fjm8 (reflected XSS); the only code change is the root error component typing `error` as `unknown`.
 
 **State (2026-09-12): practice can no longer preview a daily (`28664d3`, live-verified).** The 41
@@ -16,7 +24,7 @@ Dailies unchanged. Rule is global: DECISIONS 2026-09-12 "practice must never pre
 
 **State (2026-08-04):** Fixed `dist-check failed with exit status 1`. Nitro had redirected every production build to `.output`, leaving the checker and `vite preview` looking for the missing standard `dist/server/server.js`. Nitro now runs only when `VERCEL` is set; ordinary builds emit TanStack's standard `dist` output. Practice mode also initializes deterministically so SSR and hydration agree, then chooses randomly only on the player's practice action. The Pacific-time daily boundary fix and regression tests remain in place. Verify both paths with `bun run build` and `VERCEL=1 bun run build`.
 
-**State (2026-07-16, evening — memory consolidation + address fix already live).** Since the entry below: (1) the daily email now prints the postal address `7511 Greenwood Ave North, Unit 4147, Seattle, WA 98103` (Anytime Mailbox; PO-box swap planned), held by **4 vitest tests (167 total)** — it had shipped with an unsubscribe link but NO postal address, which CAN-SPAM requires and which nothing could catch because the email is assembled in code. (2) **CRITICAL OPEN: the daily reminder has NEVER actually sent** — the only broadcast the route ever created (13:01 UTC 2026-07-16) sits in Resend as a `draft` named "Untitled". Hypothesis (unproven): Resend refused the bulk send without the address; **first check next session: `list-broadcasts` after the 13:00 UTC cron — status must be `sent`, not `draft`**. The owner's earlier dry-run 401 was an empty `$CRON_SECRET` in the shell, not a code bug (route auth proven locally all three ways). (3) The shared **synergy-capture Worker is deployed and its contact-creation path PROVEN** (2026-07-16 21:40 UTC) — this repo's `/api/subscribe` + `/confirm` + `optInToken.ts` + `rateLimit.ts` retire after migration (see BACKLOG; keep `/confirm` alive 48h past cutover). (4) reference.md/README/DECISIONS/BACKLOG updated to current truth (RESEND_TOPIC_ID + SUBSCRIBE_SECRET documented, GA4 item closed, Resend ids inline). Day-2 email ops: global `email-ops` skill.
+**State (2026-07-16, evening — memory consolidation + address fix already live).** Since the entry below: (1) the daily email now prints the postal address `7511 Greenwood Ave North, Unit 4147, Seattle, WA 98103` (Anytime Mailbox; PO-box swap planned), held by **4 vitest tests (167 total)** — it had shipped with an unsubscribe link but NO postal address, which CAN-SPAM requires and which nothing could catch because the email is assembled in code. (2) The daily reminder's first broadcast (07-16) stayed a `draft`; it has sent every day since 07-17 (resolved, see the 2026-10-08 note at the top). (3) The shared **synergy-capture Worker is deployed and its contact-creation path PROVEN** (2026-07-16 21:40 UTC) — this repo's `/api/subscribe` + `/confirm` + `optInToken.ts` + `rateLimit.ts` retire after migration (see BACKLOG; keep `/confirm` alive 48h past cutover). (4) reference.md/README/DECISIONS/BACKLOG updated to current truth (RESEND_TOPIC_ID + SUBSCRIBE_SECRET documented, GA4 item closed, Resend ids inline). Day-2 email ops: global `email-ops` skill.
 
 **State (2026-07-16, later): daily reminder is now scoped to a Resend topic (`main bf085ff`).**
 Found while working in the-trail-game: a contact's `unsubscribed` flag is **account-wide**, not
@@ -98,4 +106,4 @@ Signup used to add the address to the Resend segment on submit, so anyone could 
 
 **Run/verify:** `bun install`; `bun run dev` (:8080); `bun run test`; `bun run build`. For any build/deploy issue, ALWAYS test the frozen path: `rm -rf node_modules && bun install --frozen-lockfile && VERCEL=1 bun run build`.
 
-**Next:** Add Spelling Blocks to the-trail-game and eyeball-it cross-promo lists (done already for five-second-game `MoreGames.tsx` and one-page-toys Friends of the gallery). Confirm the first daily cron fires (13:00 UTC) and a real signup lands in the Resend segment. Repo backlog: trim the ~4MB bundled dictionary.
+**Next:** Add Spelling Blocks to the-trail-game and eyeball-it cross-promo lists (done already for five-second-game `MoreGames.tsx` and one-page-toys Friends of the gallery). Confirm a real signup lands in the Resend segment. Repo backlog: trim the ~4MB bundled dictionary.
