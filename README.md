@@ -28,8 +28,10 @@ in the Vercel project for deploys):
   account, since `unsubscribed` is a contact-level flag rather than a per-segment one
 - `CRON_SECRET` — shared secret Vercel Cron sends as `Authorization: Bearer` to `/api/daily-reminder`
 
-The reminder cron (`vercel.json`) runs daily at 13:00 UTC (6am Pacific during
-daylight saving; Vercel Cron is UTC only and does not shift with DST).
+The reminder cron (`vercel.json`) runs daily at 13:00 UTC and books the
+broadcast with Resend for 8am Pacific, when the network's other dailies land.
+Vercel Cron is UTC only and does not shift with DST, so the exact time is set
+through Resend's `scheduledAt` instead (`src/lib/send-time.ts`).
 
 To check the reminder's wiring without mailing anyone, add `?dry_run=1`. It
 proves the API key works and that the segment and topic ids resolve — an env var

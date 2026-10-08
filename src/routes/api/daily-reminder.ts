@@ -1,6 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { Resend } from "resend";
 import { getTodayPuzzleNumber } from "@/game/daily";
+import { planSend } from "@/lib/send-time";
 
 const SITE_URL = "https://spellingblocks.com";
 const PLAY_URL = `${SITE_URL}?utm_source=email&utm_medium=daily&utm_campaign=reminder`;
@@ -94,7 +95,12 @@ async function sendReminder(request: Request): Promise<Response> {
     return json({ ok: false, error: "Not configured." }, 500);
   }
 
-  const puzzleNumber = getTodayPuzzleNumber();
+  /* The cron fires at 13:00 UTC and books the broadcast for 8 AM Pacific, when
+     the rest of the network's dailies land. A manual run after 8 AM sends now.
+     The puzzle number is taken at the send time, not the run time. */
+  const { at } = planSend();
+  const puzzleNumber = getTodayPuzzleNumber(at ?? new Date());
+  const scheduledAt = at?.toISOString();
   const resend = new Resend(apiKey);
 
   /* `?dry_run=1` checks the wiring without mailing anyone: it proves the key
@@ -120,6 +126,7 @@ async function sendReminder(request: Request): Promise<Response> {
       ok: true,
       dryRun: true,
       puzzleNumber,
+      scheduledAt: scheduledAt ?? null,
       segment: segment.data?.name ?? null,
       topic: topic.data?.name ?? null,
     });
@@ -133,12 +140,13 @@ async function sendReminder(request: Request): Promise<Response> {
       subject: `Spelling Blocks #${puzzleNumber} is up`,
       html: renderEmail(puzzleNumber),
       send: true,
+      scheduledAt,
     });
     if (error) {
       console.error("daily-reminder: resend error", error);
       return json({ ok: false, error: "Send failed." }, 502);
     }
-    return json({ ok: true, puzzleNumber, broadcastId: data?.id ?? null });
+    return json({ ok: true, puzzleNumber, scheduledAt: scheduledAt ?? null, broadcastId: data?.id ?? null });
   } catch (err) {
     console.error("daily-reminder: unexpected error", err);
     return json({ ok: false, error: "Send failed." }, 500);
