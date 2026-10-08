@@ -1,6 +1,22 @@
 # Handoff
 
-**Last updated: 2026-10-08.** The daily reminder now books its broadcast for 8 AM Pacific through
+**Last updated: 2026-10-08 (a year of new dailies, `ed96327`, live-verified).** The daily no longer
+loops every 91 days. `dailyIndex()` in `src/game/daily.ts` keeps #1-#286 on their original puzzles
+FOREVER (`(n-1) % 91`) and walks `src/data/daily-extension.ts` from **#287 (2026-10-14)** on, one per
+day; 365 appended dailies run to **2027-10-13**. #287 is the day the old loop would first have repeated
+a puzzle served since launch (POCKET+KNIVES, 07-15); the originals due 10-09..10-13 were last shown
+before the site existed, so they run first. Live check: #281 rendered with identical tiles after the
+deploy, and the shipped bundle carries the list and `if(e<287)return(e-1)%91`.
+- ⚠ **Never edit, reorder or regenerate a line of `daily-extension.ts`, nor touch the 91 originals or
+  `ORIGINAL_DAILIES` / `FIRST_EXTENDED_PUZZLE`.** Saved games (`daily_<n>`) restore by number with exact
+  block positions. Add more with `node scripts/gen-dailies.mjs --add 365`, which only appends.
+- ⚠ **`daily.test.ts` FAILS THE BUILD when fewer than 30 days remain** (mid-September 2027) — that is
+  the reminder; the fix is the command above. Past the end the schedule loops the extension.
+- New dailies use fresh hand-picked words (none from practice or the originals), weekly rhythm Sun-Tue
+  easy, Wed-Fri medium, Sat hard; `puzzles.test.ts` holds the freshness rules. `gen-practice.mjs` now
+  reads the extension too, so a practice regen stays clear of it.
+
+**Earlier on 2026-10-08:** The daily reminder now books its broadcast for 8 AM Pacific through
 Resend's `scheduledAt` (`c4a1cfc`, `src/lib/send-time.ts`), matching the rest of the network; the
 Vercel cron stays at 13:00 UTC, which is before 8 AM Pacific in both seasons. Puzzle number is taken at
 the send time. ✅ **The old "daily has never sent" worry is resolved:** Resend shows a `sent`
@@ -17,8 +33,6 @@ Practice is now 120 puzzles from `scripts/gen-practice.mjs` (40 per difficulty, 
 words, no daily word, every letter set 4+ letters from every daily), enforced in `puzzles.test.ts`;
 `scripts/build-feeder-data.mjs` rebuilds the feeder's `data.js` from practice only (OPT `049a772`).
 Dailies unchanged. Rule is global: DECISIONS 2026-09-12 "practice must never preview the daily".
-- ⚠ **OPEN, owner's call: the daily list LOOPS every 91 days** (`idx = (n-1) % 91`); the first
-  returning player sees an already-solved puzzle on **2026-10-15**. Needs more dailies APPENDED.
 - ⚠ **OPEN bug: rollover is Pacific midnight (`daily.ts`), but both countdowns (site and feeder)
   count to the player's LOCAL midnight.**
 

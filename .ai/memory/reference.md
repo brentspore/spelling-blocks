@@ -13,6 +13,7 @@ type: reference
   - `bun run build` — runs the puzzle tests (`prebuild`) then `vite build`
   - `bun run preview` / `bun run lint` / `bun run format`
   - `bash scripts/build-assets.sh` — regenerate og.png + favicon set (needs Google Chrome)
+  - `node scripts/gen-dailies.mjs --add 365` — APPEND more dailies to `src/data/daily-extension.ts` (never regenerate; see HANDOFF). The build fails 30 days before they run out.
 - **Docker (local dev):** `docker compose up -d` → http://localhost:5138, `docker compose down` to stop. Runs this repo's `dev` script in a container over the live working tree, hot reload as with `start`; the first start installs dependencies into a Docker volume, later starts take seconds. Local only: `start` stays the everyday server and `git push` still deploys. Port from `~/.ai/skills/docker/ports.md`; details in the `docker` skill. (Added 2026-09-24.)
 - **External systems:**
   - Vercel — hosting; auto-deploys on push to `main`. SSR is built by nitro's Vercel preset (auto-detected via `VERCEL=1`) into `.vercel/output` (Build Output API); the whole app plus the `/api` server routes ship inside the `__server.func` SSR function. Cron via `vercel.json`.
